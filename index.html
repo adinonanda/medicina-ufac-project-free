@@ -1,0 +1,2408 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MedUFAC 360° | Plataforma de Alta Performance - Medicina UFAC</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome para ícones nítidos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            amazon: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Ajustes sutis de barra de rolagem e transições */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.35); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(16, 185, 129, 0.6); }
+    .glass-header { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { opacity: 1; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col">
+
+  <!-- Toast / Notificação Flutuante (Substitui alert()) -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Modal de Confirmação Customizado (Substitui confirm()) -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center gap-3 text-amber-500 mb-3">
+        <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+        <h3 id="confirm-title" class="font-display font-bold text-lg text-slate-900 dark:text-white">Confirmar ação</h3>
+      </div>
+      <p id="confirm-message" class="text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed"></p>
+      <div class="flex justify-end gap-3">
+        <button id="confirm-cancel" class="px-4 py-2 rounded-xl text-sm font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">Cancelar</button>
+        <button id="confirm-ok" class="px-4 py-2 rounded-xl text-sm font-semibold bg-rose-600 hover:bg-rose-700 text-white transition">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cabeçalho Fixo -->
+  <header class="sticky top-0 z-40 glass-header bg-white/85 dark:bg-slate-900/85 border-b border-slate-200/80 dark:border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <!-- Marca -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amazon-600 to-teal-700 flex items-center justify-center text-white shadow-lg shadow-amazon-600/20">
+          <i class="fa-solid fa-stethoscope text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-display font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">MedUFAC <span class="text-amazon-600 dark:text-amazon-400">360°</span></span>
+            <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amazon-100 text-amazon-800 dark:bg-amazon-900/50 dark:text-amazon-300 border border-amazon-200 dark:border-amazon-800">100% Gratuito • YouTube</span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Rumo à aprovação em Medicina — Rio Branco / UFAC (Janeiro)</p>
+        </div>
+      </div>
+
+      <!-- Ações Rápidas: Streak, Backup e Tema -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Streak Badge -->
+        <div title="Dias seguidos marcando atividades" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 text-amber-700 dark:text-amber-300 text-xs sm:text-sm font-bold">
+          <i class="fa-solid fa-fire text-amber-500 animate-pulse"></i>
+          <span id="header-streak">0</span>
+          <span class="hidden md:inline font-medium text-xs">dias</span>
+        </div>
+
+        <!-- Exportar JSON -->
+        <button onclick="exportData()" title="Exportar backup dos estudos (JSON)" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition text-xs sm:text-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-download text-amazon-600 dark:text-amazon-400"></i>
+          <span class="hidden lg:inline font-medium">Backup</span>
+        </button>
+
+        <!-- Importar JSON -->
+        <label title="Restaurar backup (JSON)" class="cursor-pointer p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition text-xs sm:text-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-upload text-sky-600 dark:text-sky-400"></i>
+          <span class="hidden lg:inline font-medium">Restaurar</span>
+          <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)" />
+        </label>
+
+        <!-- Alternar Modo Claro/Escuro -->
+        <button onclick="toggleTheme()" id="theme-btn" title="Alternar tema Claro/Escuro" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">
+          <i id="theme-icon" class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Dashboard Superior de Alta Performance -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Card 1: Progresso Anual -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Progresso Anual (48 Sem)</span>
+          <span class="w-8 h-8 rounded-lg bg-amazon-50 dark:bg-amazon-950/60 text-amazon-600 dark:text-amazon-400 flex items-center justify-center">
+            <i class="fa-solid fa-calendar-check"></i>
+          </span>
+        </div>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 id="stat-annual-pct" class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">0.0%</h2>
+          <span id="stat-annual-tasks" class="text-xs font-medium text-slate-500 dark:text-slate-400">0 / 0 blocos</span>
+        </div>
+        <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+          <div id="bar-annual" class="h-full bg-gradient-to-r from-amazon-500 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <p id="stat-week-progress" class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">Semana atual: 0% concluída</p>
+      </div>
+
+      <!-- Card 2: Questões Resolvidas -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Questões Resolvidas</span>
+          <span class="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </span>
+        </div>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 id="stat-questions-done" class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">0</h2>
+          <span id="stat-questions-goal" class="text-xs font-medium text-slate-500 dark:text-slate-400">Meta anual: 18.000+</span>
+        </div>
+        <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+          <div id="bar-questions" class="h-full bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <p id="stat-week-questions" class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">Nesta semana: 0 questões</p>
+      </div>
+
+      <!-- Card 3: Taxa de Acertos (Padrão Medicina 80%+) -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Taxa Global de Acertos</span>
+          <span class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+            <i class="fa-solid fa-bullseye"></i>
+          </span>
+        </div>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 id="stat-accuracy" class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">--%</h2>
+          <span id="stat-accuracy-badge" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">Meta Med: ≥ 80%</span>
+        </div>
+        <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+          <div id="bar-accuracy" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <p id="stat-correct-count" class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">0 acertos totais registrados</p>
+      </div>
+
+      <!-- Card 4: Simulados & Foco Regional -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Simulados & Dossiê AC</span>
+          <span class="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+            <i class="fa-solid fa-award"></i>
+          </span>
+        </div>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 id="stat-simulados-count" class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">0</h2>
+          <span id="stat-acre-progress" class="text-xs font-semibold text-amazon-600 dark:text-amazon-400">Acre: 0/16 tópicos</span>
+        </div>
+        <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+          <div id="bar-acre" class="h-full bg-gradient-to-r from-amazon-500 to-amber-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <p id="stat-best-simulado" class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">Melhor média simulado: --</p>
+      </div>
+    </section>
+
+    <!-- Navegação Principal por Abas -->
+    <nav class="flex flex-wrap items-center gap-2 bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+      <button onclick="switchTab('cronograma')" id="tab-btn-cronograma" class="tab-btn flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition bg-amazon-600 text-white shadow-sm">
+        <i class="fa-solid fa-calendar-days"></i>
+        <span>Cronograma Anual (Jan–Dez)</span>
+      </button>
+      <button onclick="switchTab('acre')" id="tab-btn-acre" class="tab-btn flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <i class="fa-solid fa-tree"></i>
+        <span>Dossiê Acre & Amazônia</span>
+        <span class="px-1.5 py-0.5 text-[10px] rounded-md bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 font-bold">PESO ALTO</span>
+      </button>
+      <button onclick="switchTab('simulados')" id="tab-btn-simulados" class="tab-btn flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Simulados & Notas UFAC</span>
+      </button>
+      <button onclick="switchTab('erros')" id="tab-btn-erros" class="tab-btn flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <i class="fa-solid fa-book-medical"></i>
+        <span>Caderno de Erros</span>
+      </button>
+      <button onclick="switchTab('canais')" id="tab-btn-canais" class="tab-btn flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <i class="fa-brands fa-youtube text-rose-500"></i>
+        <span>Guia de Professores</span>
+      </button>
+    </nav>
+
+    <!-- ===================================================================== -->
+    <!-- ABA 1: CRONOGRAMA ANUAL (JANEIRO A DEZEMBRO - 48 SEMANAS)             -->
+    <!-- ===================================================================== -->
+    <section id="view-cronograma" class="space-y-6">
+      <!-- Controles de Seleção de Mês, Semana e Filtros -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 class="font-display font-bold text-lg sm:text-xl text-slate-900 dark:text-white">Planejamento Semanal Detalhado</h2>
+              <span id="phase-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-amazon-100 text-amazon-800 dark:bg-amazon-900/60 dark:text-amazon-300">Fase 1: Base Sólida</span>
+            </div>
+            <p id="phase-desc" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Construção teórica profunda + resolução de listas de fixação + introdução aos temas regionais do Acre.</p>
+          </div>
+
+          <!-- Seletor de Semana (1 a 4) -->
+          <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl self-start lg:self-center">
+            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 px-2">Semana:</span>
+            <button onclick="selectWeek(1)" id="week-btn-1" class="week-btn px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white dark:bg-slate-700 text-amazon-700 dark:text-amazon-300 shadow-sm">Sem 1</button>
+            <button onclick="selectWeek(2)" id="week-btn-2" class="week-btn px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-700/60">Sem 2</button>
+            <button onclick="selectWeek(3)" id="week-btn-3" class="week-btn px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-700/60">Sem 3</button>
+            <button onclick="selectWeek(4)" id="week-btn-4" class="week-btn px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-700/60">Sem 4</button>
+          </div>
+        </div>
+
+        <!-- Barra de Meses (Janeiro a Dezembro) -->
+        <div class="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-12 gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800" id="month-selector">
+          <!-- Gerado via JS -->
+        </div>
+
+        <!-- Filtros Rápidos e Ações da Semana -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Filtrar dia:</span>
+            <select id="filter-day" onchange="renderSchedule()" class="text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amazon-500">
+              <option value="all">Todos os dias (Seg a Dom)</option>
+              <option value="0">Segunda-feira (Mat + Hist + Acre/Amazônia)</option>
+              <option value="1">Terça-feira (Física + Geografia)</option>
+              <option value="2">Quarta-feira (Química + Linguagens)</option>
+              <option value="3">Quinta-feira (Biologia + Filo/Socio)</option>
+              <option value="4">Sexta-feira (Exatas + Atualidades + Redação)</option>
+              <option value="5">Sábado (Simulado + Correção + Revisão)</option>
+              <option value="6">Domingo (Descanso Obrigatório)</option>
+            </select>
+
+            <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300 cursor-pointer ml-2">
+              <input type="checkbox" id="filter-pending" onchange="renderSchedule()" class="rounded text-amazon-600 focus:ring-amazon-500">
+              <span>Mostrar apenas pendentes</span>
+            </label>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span id="week-meta-summary" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-amazon-50 dark:bg-amazon-950/50 text-amazon-700 dark:text-amazon-300 border border-amazon-200/70 dark:border-amazon-800/60">
+              Meta da semana: 0 questões
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grade dos Dias da Semana -->
+      <div id="schedule-container" class="space-y-5">
+        <!-- Gerado dinamicamente via JS -->
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- ABA 2: DOSSIÊ ACRE & AMAZÔNIA (PESO ALTO NA UFAC)                     -->
+    <!-- ===================================================================== -->
+    <section id="view-acre" class="hidden space-y-6">
+      <div class="bg-gradient-to-br from-amazon-800 via-amazon-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
+        <div class="relative z-10 max-w-3xl">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30 mb-3">
+            <i class="fa-solid fa-star"></i> DIFERENCIAL DE APROVAÇÃO EM MEDICINA UFAC
+          </span>
+          <h2 class="font-display font-extrabold text-2xl sm:text-3xl mb-2">Dossiê Estratégico: História e Geografia do Acre & Amazônia</h2>
+          <p class="text-sm sm:text-base text-amazon-100/90 leading-relaxed">
+            No vestibular/processo seletivo da UFAC e nas questões regionalizadas, dominar a formação territorial, socioambiental e geopolítica do Acre e da Amazônia garante pontos preciosos que a maioria dos concorrentes negligencia. Marque cada tópico dominado e revise com resumos estratégicos.
+          </p>
+        </div>
+      </div>
+
+      <!-- Filtro de Categoria Regional -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+        <div class="flex flex-wrap gap-2">
+          <button onclick="filterAcre('all')" id="acre-filter-all" class="acre-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amazon-600 text-white">Todos os Tópicos (16)</button>
+          <button onclick="filterAcre('historia')" id="acre-filter-historia" class="acre-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">História do Acre & Amazônia (8)</button>
+          <button onclick="filterAcre('geografia')" id="acre-filter-geografia" class="acre-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Geografia do Acre & Amazônia (8)</button>
+        </div>
+        <div class="text-xs font-semibold text-slate-600 dark:text-slate-300">
+          Dominados: <span id="acre-mastered-count" class="text-amazon-600 dark:text-amazon-400 font-bold">0 de 16</span>
+        </div>
+      </div>
+
+      <!-- Cards do Dossiê -->
+      <div id="acre-dossier-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Gerado via JS -->
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- ABA 3: SIMULADOS & NOTAS UFAC (JAN A DEZ)                             -->
+    <!-- ===================================================================== -->
+    <section id="view-simulados" class="hidden space-y-6">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 class="font-display font-bold text-xl text-slate-900 dark:text-white">Controle de Simulados & Provas Antigas (UFAC / ENEM)</h2>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Registre seus simulados de sábado desde Janeiro até Dezembro. Para Medicina na UFAC, busque consistência acima de <strong>780–810+ pontos</strong> (ou >82% de acertos gerais + Redação 920+).</p>
+          </div>
+          <div class="px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-xs text-amber-800 dark:text-amber-300">
+            <i class="fa-solid fa-lightbulb mr-1"></i> <strong>Dica de Ouro:</strong> Nunca faça simulado sem corrigir cada erro no domingo/segunda!
+          </div>
+        </div>
+
+        <!-- Formulário de Novo Simulado -->
+        <form id="simulado-form" onsubmit="addSimulado(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-8 gap-3 bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200/70 dark:border-slate-700/70 mb-6">
+          <div class="lg:col-span-2">
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Nome / Banca do Simulado</label>
+            <input type="text" id="sim-name" required placeholder="Ex: Simulado UFAC 2023 / ENEM 1" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amazon-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Mês</label>
+            <select id="sim-month" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amazon-500 outline-none">
+              <option value="Janeiro">Janeiro</option>
+              <option value="Fevereiro">Fevereiro</option>
+              <option value="Março">Março</option>
+              <option value="Abril">Abril</option>
+              <option value="Maio">Maio</option>
+              <option value="Junho">Junho</option>
+              <option value="Julho">Julho</option>
+              <option value="Agosto">Agosto</option>
+              <option value="Setembro">Setembro</option>
+              <option value="Outubro">Outubro</option>
+              <option value="Novembro">Novembro</option>
+              <option value="Dezembro">Dezembro</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Linguagens (/45)</label>
+            <input type="number" id="sim-ling" min="0" max="45" required placeholder="0-45" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amazon-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Humanas (/45)</label>
+            <input type="number" id="sim-hum" min="0" max="45" required placeholder="0-45" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amazon-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Natureza (/45)</label>
+            <input type="number" id="sim-nat" min="0" max="45" required placeholder="0-45" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amazon-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Matemática (/45)</label>
+            <input type="number" id="sim-mat" min="0" max="45" required placeholder="0-45" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amazon-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Redação (0-1000)</label>
+            <input type="number" id="sim-red" min="0" max="1000" step="20" required placeholder="920" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amazon-500 outline-none">
+          </div>
+          <div class="sm:col-span-2 lg:col-span-8 flex justify-end">
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-amazon-600 hover:bg-amazon-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-2">
+              <i class="fa-solid fa-plus"></i> Registrar Simulado
+            </button>
+          </div>
+        </form>
+
+        <!-- Tabela de Simulados -->
+        <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider">
+                <th class="p-3">Mês</th>
+                <th class="p-3">Simulado</th>
+                <th class="p-3 text-center">Ling</th>
+                <th class="p-3 text-center">Hum</th>
+                <th class="p-3 text-center">Nat</th>
+                <th class="p-3 text-center">Mat</th>
+                <th class="p-3 text-center">Total (/180)</th>
+                <th class="p-3 text-center">% Acertos</th>
+                <th class="p-3 text-center">Redação</th>
+                <th class="p-3 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="simulados-table-body" class="divide-y divide-slate-200 dark:divide-slate-800">
+              <!-- Gerado via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- ABA 4: CADERNO DE ERROS & REVISÃO ESPAÇADA                            -->
+    <!-- ===================================================================== -->
+    <section id="view-erros" class="hidden space-y-6">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="mb-5">
+          <h2 class="font-display font-bold text-xl text-slate-900 dark:text-white">Caderno de Erros Inteligente (Padrão Aprovação)</h2>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Anote toda questão que você errou ou acertou no chute, identifique o motivo (lacuna teórica, falta de atenção ou interpretação) e revise periodicamente.</p>
+        </div>
+
+        <form id="error-form" onsubmit="addErrorNote(event)" class="grid grid-cols-1 md:grid-cols-12 gap-3 bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200/70 dark:border-slate-700/70 mb-6">
+          <div class="md:col-span-3">
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Matéria</label>
+            <select id="err-subject" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none">
+              <option value="Matemática">Matemática</option>
+              <option value="Física">Física</option>
+              <option value="Química">Química</option>
+              <option value="Biologia">Biologia</option>
+              <option value="História / Acre">História / Acre</option>
+              <option value="Geografia / Amazônia">Geografia / Amazônia</option>
+              <option value="Linguagens">Linguagens</option>
+              <option value="Filosofia / Sociologia">Filosofia / Sociologia</option>
+            </select>
+          </div>
+          <div class="md:col-span-3">
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Assunto Específico</label>
+            <input type="text" id="err-topic" required placeholder="Ex: Eletrodinâmica / Revolução Acreana" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Causa do Erro</label>
+            <select id="err-reason" class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none">
+              <option value="Lacuna Teórica">Lacuna Teórica</option>
+              <option value="Interpretação">Interpretação</option>
+              <option value="Falta de Atenção / Conta">Atenção / Conta</option>
+              <option value="Tempo Insuficiente">Tempo</option>
+            </select>
+          </div>
+          <div class="md:col-span-4">
+            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">O que aprender / Como não errar mais</label>
+            <input type="text" id="err-lesson" required placeholder="Resumo da regra ou macete..." class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none">
+          </div>
+          <div class="md:col-span-12 flex justify-end">
+            <button type="submit" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition flex items-center gap-2">
+              <i class="fa-solid fa-plus"></i> Adicionar ao Caderno de Erros
+            </button>
+          </div>
+        </form>
+
+        <div id="errors-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Gerado via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- ABA 5: GUIA DE CANAIS DO YOUTUBE                                      -->
+    <!-- ===================================================================== -->
+    <section id="view-canais" class="hidden space-y-6">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <h2 class="font-display font-bold text-xl text-slate-900 dark:text-white mb-1">Sua Equipe de Professores 100% Gratuita no YouTube</h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-6">Todos os dias do seu cronograma possuem botões de busca direta filtrados para o canal exato de cada professor abaixo.</p>
+        <div id="channels-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Gerado via JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-5 mt-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+      <p><strong>MedUFAC 360°</strong> — Dedicado à sua aprovação em Medicina na Universidade Federal do Acre. Disciplina vence talento.</p>
+      <button onclick="confirmResetAll()" class="text-rose-600 dark:text-rose-400 hover:underline font-medium">Resetar todo o progresso</button>
+    </div>
+  </footer>
+
+  <!-- ======================================================================= -->
+  <!-- JAVASCRIPT COMPLETO (DADOS DOS 12 MESES, LÓGICA E LOCALSTORAGE)         -->
+  <!-- ======================================================================= -->
+  <script>
+    // =========================================================================
+    // 1. CONFIGURAÇÃO DOS PROFESSORES E CANAIS DO YOUTUBE
+    // =========================================================================
+    const CHANNELS = {
+      matematica: {
+        subject: 'Matemática',
+        teacher: 'Universo Narrado',
+        queryPrefix: 'Universo Narrado',
+        url: 'https://www.youtube.com/@UniversoNarrado',
+        color: 'blue',
+        tip: 'Assista entendendo a demonstração e a lógica por trás das fórmulas. Nunca decore sem compreender.'
+      },
+      fisica: {
+        subject: 'Física',
+        teacher: 'Professor Boaro',
+        queryPrefix: 'Professor Boaro',
+        url: 'https://www.youtube.com/@professorboaro',
+        color: 'indigo',
+        tip: 'Pause o vídeo nos exercícios resolvidos do Boaro, tente resolver sozinha e depois confira o passo a passo.'
+      },
+      quimica: {
+        subject: 'Química',
+        teacher: 'Plataforma Assaad',
+        queryPrefix: 'Plataforma Assaad Química',
+        url: 'https://www.youtube.com/@PlataformaAssaad',
+        color: 'emerald',
+        tip: 'Foque nos padrões de cobrança de Estequiometria, Físico-Química e Orgânica que mais derrubam candidatos.'
+      },
+      biologia: {
+        subject: 'Biologia',
+        teacher: 'Samuel Cunha',
+        queryPrefix: 'Biologia com Samuel Cunha',
+        url: 'https://www.youtube.com/@BiologiacomSamuelCunha',
+        color: 'green',
+        tip: 'Faça esquemas visuais de Citologia, Fisiologia Humana, Genética e Ecologia Amazônica.'
+      },
+      linguagens: {
+        subject: 'Linguagens & Gramática',
+        teacher: 'Professor Noslen',
+        queryPrefix: 'Professor Noslen',
+        url: 'https://www.youtube.com/@ProfessorNoslen',
+        color: 'amber',
+        tip: 'Combine as aulas de Gramática/Literatura do Noslen com interpretação diária de textos.'
+      },
+      humanas_parabolica: {
+        subject: 'Filosofia, Sociologia & Atualidades',
+        teacher: 'Parabólica (Pedro Rennó)',
+        queryPrefix: 'Parabólica',
+        url: 'https://www.youtube.com/@Parabolica',
+        color: 'purple',
+        tip: 'Anote conceitos-chave dos filósofos e sociólogos para usar também como repertório sociocultural na Redação!'
+      },
+      historia: {
+        subject: 'História Geral & Brasil',
+        teacher: 'Débora Aladim',
+        queryPrefix: 'Débora Aladim',
+        url: 'https://www.youtube.com/@deboraaladim',
+        color: 'rose',
+        tip: 'Conecte os contextos históricos globais com o Brasil e com a ocupação da Amazônia.'
+      },
+      geografia: {
+        subject: 'Geografia Geral & Brasil',
+        teacher: 'Thais Formagio',
+        queryPrefix: 'Thais Formagio Geografia',
+        url: 'https://www.youtube.com/@ThaisFormagio',
+        color: 'teal',
+        tip: 'Domine climatologia, cartografia, geopolítica e questões ambientais amazônicas.'
+      },
+      redacao: {
+        subject: 'Redação Nota 960+',
+        teacher: 'Luma e Ponto',
+        queryPrefix: 'Luma e Ponto redação',
+        url: 'https://www.youtube.com/@LumaePonto',
+        color: 'pink',
+        tip: 'Treine toda sexta-feira cronometrando 1h15min e analisando as 5 competências rigorosamente.'
+      },
+      regional: {
+        subject: 'História & Geografia do Acre / Amazônia',
+        teacher: 'Foco Regional UFAC (Aulas & Documentários)',
+        queryPrefix: 'História e Geografia do Acre vestibular UFAC',
+        url: 'https://www.youtube.com/results?search_query=Historia+e+Geografia+do+Acre+UFAC',
+        color: 'amazon',
+        tip: 'Estude com mapas do Acre (Vale do Juruá e Vale do Acre), tratados fronteiriços e movimentos socioambientais.'
+      }
+    };
+
+    // =========================================================================
+    // 2. CURRÍCULO ANUAL COMPLETO (48 SEMANAS - JANEIRO A DEZEMBRO)
+    // =========================================================================
+    const MONTHS = [
+      { id: 0, name: 'Janeiro', short: 'Jan', phase: 'Fase 1: Base Sólida & Fundamentos', desc: 'Construção da matemática básica, mecânica inicial, química geral, citologia e raízes históricas do Brasil e do Acre.' },
+      { id: 1, name: 'Fevereiro', short: 'Fev', phase: 'Fase 1: Base Sólida & Fundamentos', desc: 'Consolidação de funções, cinemática, ligações químicas, bioquímica e formação territorial da Amazônia.' },
+      { id: 2, name: 'Março', short: 'Mar', phase: 'Fase 1: Base Sólida & Fundamentos', desc: 'Aprofundamento em funções, leis de Newton, funções inorgânicas, metabolismo energético e Ciclos da Borracha.' },
+      { id: 3, name: 'Abril', short: 'Abr', phase: 'Fase 2: Expansão & Conexões', desc: 'Trigonometria, trabalho/energia, estequiometria pesada, histologia e a Revolução Acreana e Plácido de Castro.' },
+      { id: 4, name: 'Maio', short: 'Mai', phase: 'Fase 2: Expansão & Conexões', desc: 'Geometria plana, impulsos/gravitação, soluções/termoquímica, fisiologia humana e Tratado de Petrópolis.' },
+      { id: 5, name: 'Junho', short: 'Jun', phase: 'Fase 2: Expansão & Conexões', desc: 'Geometria espacial, hidrostática/termologia, cinética/equilíbrio químico, fisiologia e Hidrografia do Acre.' },
+      { id: 6, name: 'Julho', short: 'Jul', phase: 'Fase 3: Meio de Ano & Revisão Cumulativa', desc: 'Revisão estratégica do 1º semestre + análise combinatória/probabilidade, óptica/ondulatória e Chico Mendes.' },
+      { id: 7, name: 'Agosto', short: 'Ago', phase: 'Fase 3: Aprofundamento de Alta Nota', desc: 'Estatística/matrizes, eletrostática, eletroquímica, genética mendeliana e Geopolítica da Amazônia/BR-364.' },
+      { id: 8, name: 'Setembro', short: 'Set', phase: 'Fase 3: Aprofundamento de Alta Nota', desc: 'Geometria analítica, eletrodinâmica completa, química orgânica, biotecnologia/evolução e Demografia Acreana.' },
+      { id: 9, name: 'Outubro', short: 'Out', phase: 'Fase 4: Reta Final & Alta Velocidade', desc: 'Isomeria/reações orgânicas, eletromagnetismo, ecologia completa e resolução intensiva de provas UFAC/ENEM.' },
+      { id: 10, name: 'Novembro', short: 'Nov', phase: 'Fase 4: Reta Final & Simulados Intensivos', desc: 'Mês de provas ENEM + revisão cirúrgica dos tópicos de maior incidência na UFAC e caderno de erros.' },
+      { id: 11, name: 'Dezembro', short: 'Dez', phase: 'Fase 5: Lapidação Final Pré-Prova UFAC (Janeiro)', desc: 'Revisão final de véspera para o vestibular da UFAC em Janeiro: Regional Acre/Amazônia, Natureza, Matemática e Redação.' }
+    ];
+
+    // Banco estruturado das 48 semanas (12 meses x 4 semanas)
+    const SYLLABUS_48_WEEKS = [
+      // ==================== JANEIRO ====================
+      {
+        mat: 'Matemática Básica: Operações, Frações, Potenciação e Radiciação',
+        hist: 'Introdução à História, Antiguidade Oriental e Grécia Antiga',
+        acre: 'Povos Originários do Acre: Troncos Pano, Aruak e Arawá (Geoglifos do Acre)',
+        fis: 'Introdução à Física, Grandezas, Sistema Internacional (SI) e Vetores',
+        geo: 'Cartografia: Coordenadas Geográficas, Fusos Horários e Escalas',
+        quim: 'Matéria, Substâncias, Misturas, Separação de Misturas e Modelos Atômicos',
+        ling: 'Funções da Linguagem, Variação Linguística e Interpretação Textual',
+        bio: 'Introdução à Biologia, Método Científico e Água/Sais Minerais',
+        filo: 'Nascimento da Filosofia: Pré-Socráticos e Sofistas',
+        sex_exatas: 'Lista Intensiva: Equações de 1º e 2º Grau + Produtos Notáveis (Universo Narrado)',
+        atual: 'Geopolítica Mundial e Conjuntura Brasileira — Panorama Inicial',
+        red: 'Estrutura da Redação Dissertativo-Argumentativa: Projeto de Texto e Tese'
+      },
+      {
+        mat: 'Razão, Proporção, Regra de Três Simples e Composta + Porcentagem',
+        hist: 'Roma Antiga: Monarquia, República, Império e Crise do Século III',
+        acre: 'Localização Geográfica do Acre, Pontos Extremos e Divisão em Regionais (Juruá e Acre)',
+        fis: 'Cinemática Escalar: Velocidade Média, MRU e Gráficos do MRU',
+        geo: 'Projeções Cartográficas e Geotecnologias (Sensoriamento Remoto e GPS)',
+        quim: 'Estrutura Atômica: Número Atômico, Massa, Isótopos e Distribuição Eletrônica',
+        ling: 'Elementos da Comunicação, Semântica e Figuras de Linguagem I',
+        bio: 'Bioquímica Celular: Carboidratos, Lipídios e Proteínas (Enzimas)',
+        filo: 'Filosofia Clássica: Sócrates, Platão e Aristóteles',
+        sex_exatas: 'Lista Intensiva: Cinemática MRU + Tabela Periódica (Boaro & Assaad)',
+        atual: 'Meio Ambiente, Crise Climática e Papel da Amazônia no Mundo',
+        red: 'Introdução Nota 1000: Como apresentar repertório e tese em 6 linhas'
+      },
+      {
+        mat: 'Teoria dos Conjuntos, Conjuntos Numéricos e Intervalos Reais',
+        hist: 'Alta Idade Média: Feudalismo, Igreja Católica e Império Bizantino',
+        acre: 'Primeiras Expedições na Amazônia Ocidental e Tratados Coloniais (Madri e Santo Ildefonso)',
+        fis: 'Cinemática: Aceleração Média, MRUV, Equação de Torricelli e Gráficos',
+        geo: 'Estrutura Interna da Terra, Tectônica de Placas e Agentes Internos do Relevo',
+        quim: 'Tabela Periódica: Organização e Propriedades Periódicas (Raio, Eletronegatividade)',
+        ling: 'Figuras de Linguagem II, Denotação, Conotação e Trovadorismo/Humanismo',
+        bio: 'Ácidos Nucleicos (DNA e RNA), Síntese Proteica e Vitaminas',
+        filo: 'Introdução à Sociologia: Auguste Comte, Positivismo e Émile Durkheim',
+        sex_exatas: 'Lista Intensiva: Conjuntos e Porcentagem Financeira (Universo Narrado)',
+        atual: 'Direitos Humanos, Cidadania e Desigualdades Sociais no Brasil',
+        red: 'Desenvolvimento 1 e 2: Estrutura Argumentativa e Conectivos Interparágrafos'
+      },
+      {
+        mat: 'Introdução às Funções: Domínio, Contradomínio, Imagem e Análise de Gráficos',
+        hist: 'Baixa Idade Média: Cruzadas, Renascimento Comercial/Urbano e Crise do Século XIV',
+        acre: 'Relevo e Solos do Acre: Depressão Rio Acre-Javari, Planalto Rebaixado e Terras Caídas',
+        fis: 'Queda Livre e Lançamento Vertical no Vácuo',
+        geo: 'Agentes Externos do Relevo, Tipos de Rochas e Solos do Brasil',
+        quim: 'Ligações Químicas: Ligação Iônica, Covalente e Metálica',
+        ling: 'Morfologia: Estrutura e Formação das Palavras + Quinhentismo/Barroco',
+        bio: 'Citologia I: Membrana Plasmática, Transporte Passivo e Transporte Ativo',
+        filo: 'Sociologia Clássica: Max Weber (Ação Social) e Karl Marx (Mais-Valia e Classes)',
+        sex_exatas: 'Revisão Mensal de Exatas: Queda Livre + Ligações Químicas (Listas Mistas)',
+        atual: 'Tecnologia, Inteligência Artificial e Impactos no Mercado de Trabalho',
+        red: 'Prática Completa de Redação 01: Tema Eixo Educação/Ciência + Autoavaliação'
+      },
+
+      // ==================== FEVEREIRO ====================
+      {
+        mat: 'Função Afim (1º Grau): Coeficientes, Raiz, Estudo do Sinal e Aplicações',
+        hist: 'Idade Moderna: Absolutismo Monárquico e Mercantilismo',
+        acre: 'O Primeiro Ciclo da Borracha (1879–1912): Migração Nordestina e o Sistema de Aviamento',
+        fis: 'Cinemática Vetorial: Composição de Movimentos e Lançamento Horizontal',
+        geo: 'Climatologia I: Fatores e Elementos do Clima e Circulação Atmosférica',
+        quim: 'Geometria Molecular, Polaridade das Moléculas e Forças Intermoleculares',
+        ling: 'Classes Gramaticais I (Substantivo, Adjetivo, Artigo, Numeral) + Arcadismo',
+        bio: 'Citologia II: Citoplasma, Organelas Celulares e Citoesqueleto',
+        filo: 'Filosofia Medieval: Patrística (Santo Agostinho) e Escolástica (São Tomás de Aquino)',
+        sex_exatas: 'Lista Intensiva: Função do 1º Grau + Lançamento Horizontal (Universo Narrado & Boaro)',
+        atual: 'Saúde Pública no Brasil, SUS e Desafios Epidemiológicos na Região Norte',
+        red: 'Conclusão e Proposta de Intervenção Completa (Os 5 Elementos Obrigatórios)'
+      },
+      {
+        mat: 'Função Quadrática (2º Grau): Vértice, Máximos e Mínimos, Gráfico e Inequações',
+        hist: 'Expansão Marítima Europeia e América Pré-Colombiana (Maias, Astecas e Incas)',
+        acre: 'Clima da Amazônia e do Acre: Equatorial Úmido, Massa Equatorial Continental e Fenômeno da Friagem',
+        fis: 'Lançamento Oblíquo no Vácuo e Cinemática Angular (MCU)',
+        geo: 'Climatologia II: Climas do Brasil e Fenômenos El Niño / La Niña',
+        quim: 'Número de Oxidação (NOX) e Introdução às Funções Inorgânicas: Ácidos',
+        ling: 'Classes Gramaticais II (Pronomes e Colocação Pronominal) + Romantismo (Poesia)',
+        bio: 'Citologia III: Núcleo Celular, Cromossomos e Divisão Celular (Mitose)',
+        filo: 'Filosofia Renascentista e Moderna: Maquiavel, Francis Bacon e René Descartes',
+        sex_exatas: 'Lista Intensiva: Máximos e Mínimos (Função Quadrática) + MCU',
+        atual: 'Segurança Alimentar, Agronegócio e Preservação Florestal',
+        red: 'Repertórios Socioculturais Coringas para Eixos Temáticos do ENEM/UFAC'
+      },
+      {
+        mat: 'Função Exponencial: Equações, Inequações e Crescimento Populacional/Bacteriano',
+        hist: 'Renascimento Cultural/Científico e Reformas Religiosas (Luterana, Calvinista, Anglicana)',
+        acre: 'A Questão do Acre: Colonização Boliviana, Luis Gálvez e o Estado Independente do Acre',
+        fis: 'Dinâmica I: As Três Leis de Newton e Principais Forças (Peso, Normal, Tração)',
+        geo: 'Hidrografia Geral e Bacias Hidrográficas Brasileiras (Foco Bacia Amazônica)',
+        quim: 'Funções Inorgânicas II: Bases, Sais e Óxidos (Chuva Ácida e Efeito Estufa)',
+        ling: 'Verbos: Tempos, Modos, Vozes Verbais + Romantismo (Prosa Urbana/Indianista)',
+        bio: 'Divisão Celular II: Meiose, Gametogênese e Alterações Cromossômicas',
+        filo: 'Racionalismo x Empirismo: Locke, Hume e o Criticismo de Immanuel Kant',
+        sex_exatas: 'Lista Intensiva: Equações Exponenciais + Funções Inorgânicas (Assaad)',
+        atual: 'Conflitos Geopolíticos Atuais e Relações Internacionais do Brasil',
+        red: 'Prática Completa de Redação 02: Tema Eixo Meio Ambiente & Sustentabilidade'
+      },
+      {
+        mat: 'Logaritmos: Definição, Propriedades Operatórias e Equações Logarítmicas',
+        hist: 'Brasil Colônia I: Período Pré-Colonial, Capitanias Hereditárias e Governo-Geral',
+        acre: 'Hidrografia do Acre: Bacias dos Rios Juruá e Purus (Rios Acre, Tarauacá, Envira, Iaco)',
+        fis: 'Dinâmica II: Força de Atrito (Estático e Cinético) e Plano Inclinado',
+        geo: 'Domínios Morfoclimáticos do Brasil (Aziz Ab’Sáber) e Biomas Brasileiros',
+        quim: 'Reações Químicas Inorgânicas e Balanceamento de Equações',
+        ling: 'Advérbio, Preposição, Conjunção + Realismo e Machado de Assis',
+        bio: 'Metabolismo Energético I: Respiração Celular Aeróbica e Fermentação',
+        filo: 'Iluminismo e Contratualismo: Hobbes, Locke e Rousseau',
+        sex_exatas: 'Revisão Mensal de Exatas: Logaritmos + Leis de Newton no Plano Inclinado',
+        atual: 'Cultura Digital, Redes Sociais e Saúde Mental dos Jovens',
+        red: 'Análise de Redações Nota 1000 e Reescrita Estratégica dos Próprios Parágrafos'
+      },
+
+      // ==================== MARÇO ====================
+      {
+        mat: 'Função Logarítmica, Gráficos e Aplicações (pH, Escala Richter, Juros)',
+        hist: 'Brasil Colônia II: Economia Açucareira, Escravidão Africana e Resistência (Quilombos)',
+        acre: 'A Revolução Acreana (1902–1903): Plácido de Castro e as Batalhas de Xapuri e Porto Acre',
+        fis: 'Dinâmica III: Força Elástica (Lei de Hooke) e Dinâmica no Movimento Circular',
+        geo: 'Questões Ambientais Globais: Aquecimento Global, Ilhas de Calor e Inversão Térmica',
+        quim: 'Leis Ponderais (Lavoisier e Proust) e Grandezas Químicas (Mol e Massa Molar)',
+        ling: 'Sintaxe do Período Simples: Sujeito, Predicado e Complementos Verbais + Naturalismo',
+        bio: 'Metabolismo Energético II: Fotossíntese e Quimiossíntese',
+        filo: 'Sociologia Contemporânea: Pierre Bourdieu (Habitus e Capital Cultural) e Zygmunt Bauman',
+        sex_exatas: 'Lista Intensiva: Cálculo de Mol e Massa Molar + Força Centrípeta',
+        atual: 'Mobilidade Urbana, Infraestrutura e Integração Sul-Americana',
+        red: 'Coesão e Coerência Textual: Como evitar repetição de palavras (Competência 4)'
+      },
+      {
+        mat: 'Função Modular e Composição/Inversão de Funções',
+        hist: 'Brasil Colônia III: União Ibérica, Invasões Holandesas e Expansão Territorial (Bandeiras)',
+        acre: 'O Tratado de Petrópolis (1903): Barão do Rio Branco, Indenização e Estrada de Ferro Madeira-Mamoré',
+        fis: 'Trabalho de uma Força Constante e Variável + Potência Mecânica e Rendimento',
+        geo: 'Demografia I: Crescimento Populacional, Teorias Demográficas e Transição Demográfica',
+        quim: 'Cálculo de Fórmulas (Percentual, Mínima e Molecular) e Estequiometria Básica',
+        ling: 'Sintaxe: Adjunto Adnominal, Complemento Nominal e Aposto + Parnasianismo/Simbolismo',
+        bio: 'Embriologia Animal e Histologia I: Tecido Epitelial e Tecido Conjuntivo',
+        filo: 'Filosofia do Século XIX: Hegel, Marx, Schopenhauer e Nietzsche',
+        sex_exatas: 'Lista Intensiva: Trabalho e Potência + Estequiometria Básica (Boaro & Assaad)',
+        atual: 'Envelhecimento Populacional, Previdência e Políticas Públicas no Brasil',
+        red: 'Prática Completa de Redação 03: Tema Eixo Saúde & Bem-Estar Social'
+      },
+      {
+        mat: 'Sequências Numéricas e Progressão Aritmética (PA): Termo Geral e Soma',
+        hist: 'Brasil Colônia IV: Ciclo do Ouro, Sociedade Mineradora e Revoltas Nativistas/Separatistas',
+        acre: 'O Acre como Território Federal (1904) e o Movimento Autonomista (Elevação a Estado em 1962)',
+        fis: 'Energia Mecânica: Cinética, Potencial Gravitacional, Elástica e Conservação de Energia',
+        geo: 'Demografia II: Pirâmides Etárias, PEA, Migrações Internacionais e Migrações no Brasil',
+        quim: 'Estequiometria Avançada: Pureza, Rendimento, Reagente em Excesso e Reações Sucessivas',
+        ling: 'Período Composto por Coordenação e Subordinação (Substantivas e Adjetivas)',
+        bio: 'Histologia II: Tecido Ósseo, Cartilaginoso, Sanguíneo, Muscular e Nervoso',
+        filo: 'Indústria Cultural e Escola de Frankfurt (Adorno, Horkheimer e Walter Benjamin)',
+        sex_exatas: 'Lista Intensiva: PA + Estequiometria com Pureza e Rendimento (Assaad)',
+        atual: 'Povos Indígenas, Demarcação de Terras e Bioeconomia na Amazônia',
+        red: 'Como articular causa e consequência nos parágrafos de desenvolvimento'
+      },
+      {
+        mat: 'Progressão Geométrica (PG): Termo Geral, Soma Finita e Soma Infinita',
+        hist: 'Revoluções Inglesas do Século XVII e Revolução Industrial',
+        acre: 'Vegetação e Biodiversidade do Acre: Floresta Ombrófila Aberta com Bambu (Taboca) e Palmeiras',
+        fis: 'Impulso, Quantidade de Movimento e Conservação da Quantidade de Movimento (Colisões)',
+        geo: 'Urbanização Brasileira, Hierarquia Urbana, Metropolização e Problemas Urbanos',
+        quim: 'Estudo dos Gases Ideais e Equação de Clapeyron',
+        ling: 'Orações Subordinadas Adverbiais + Pré-Modernismo (Euclides da Cunha, Lima Barreto)',
+        bio: 'Reino Monera (Bactérias) e Doenças Bacterianas Relevantes na Amazônia (Hanseníase, Leptospirose)',
+        filo: 'Poder, Política e Estado em Michel Foucault e Hannah Arendt',
+        sex_exatas: 'Revisão Mensal de Exatas: PG + Conservação de Energia e Colisões',
+        atual: 'Educação Básica, Evasão Escolar e Inclusão Digital no Brasil',
+        red: 'Prática Completa de Redação 04: Tema Eixo Cultura & Identidade Nacional'
+      },
+
+      // ==================== ABRIL ====================
+      {
+        mat: 'Trigonometria no Triângulo Retângulo: Seno, Cosseno, Tangente e Ângulos Notáveis',
+        hist: 'Revolução Francesa e Era Napoleônica',
+        acre: 'O Segundo Ciclo da Borracha (Segunda Guerra Mundial): Os "Soldados da Borracha" e os Acordos de Washington',
+        fis: 'Estática do Ponto Material e Estática do Corpo Rígido (Torque / Momento de uma Força)',
+        geo: 'Geografia Agrária I: Estrutura Fundiária Brasileira, Reforma Agrária e Conflitos no Campo',
+        quim: 'Dispersões e Soluções I: Coeficiente de Solubilidade e Curvas de Solubilidade',
+        ling: 'Concordância Verbal e Concordância Nominal + Semana de Arte Moderna de 1922',
+        bio: 'Vírus e Viroses Importantes (Dengue, Zika, Chikungunya, Febre Amarela, HIV)',
+        filo: 'Sociologia Brasileira I: Gilberto Freyre, Sérgio Buarque de Holanda e Caio Prado Jr.',
+        sex_exatas: 'Lista Intensiva: Trigonometria no Triângulo + Torque/Estática',
+        atual: 'Desmatamento, Queimadas e Políticas de Fiscalização Ambiental na Amazônia',
+        red: 'Domínio da Norma Culta (Competência 1): Erros gramaticais que mais tiram nota'
+      },
+      {
+        mat: 'Ciclo Trigonométrico, Arcos Côngruos e Redução ao 1º Quadrante',
+        hist: 'Independência dos EUA e Independência da América Espanhola',
+        acre: 'A Década de 1970 no Acre: Abertura da BR-364, Chegada dos "Paulistas", Pecuária Extensiva e Conflitos pela Terra',
+        fis: 'Gravitação Universal: Leis de Kepler e Lei da Gravitação de Newton',
+        geo: 'Geografia Agrária II: Modernização Agrícola, Agronegócio e Agricultura Familiar',
+        quim: 'Soluções II: Concentração Comum, Molaridade, Diluição e Mistura de Soluções',
+        ling: 'Regência Verbal e Regência Nominal + Modernismo 1ª Fase (Mário e Oswald de Andrade)',
+        bio: 'Reino Protista (Protozoários e Algas) — Malária, Leishmaniose e Doença de Chagas',
+        filo: 'Sociologia Brasileira II: Florestan Fernandes, Darcy Ribeiro e Jessé Souza',
+        sex_exatas: 'Lista Intensiva: Concentração de Soluções e Diluição (Assaad)',
+        atual: 'Acesso à Água Potável, Saneamento Básico e Saúde Preventiva',
+        red: 'Prática Completa de Redação 05: Tema Eixo Ciência, Saúde & Doenças Tropicais'
+      },
+      {
+        mat: 'Funções Trigonométricas (Seno, Cosseno, Tangente), Período e Gráficos',
+        hist: 'Período Joanino e Independência do Brasil (1822)',
+        acre: 'Chico Mendes, Wilson Pinheiro e o Movimento Seringueiro: Os "Empates" em Xapuri e Brasiléia',
+        fis: 'Hidrostática I: Densidade, Pressão, Teorema de Stevin e Princípio de Pascal',
+        geo: 'Fontes de Energia I: Matriz Energética Mundial e Brasileira (Fósseis x Renováveis)',
+        quim: 'Propriedades Coligativas (Tonoscopia, Ebulioscopia, Crioscopia e Osmose)',
+        ling: 'Uso da Crase e Pontuação + Modernismo 2ª Fase (Poesia: Drummond, Cecília Meireles)',
+        bio: 'Reino Fungi e Introdução à Botânica (Briófitas e Pteridófitas)',
+        filo: 'Antropologia, Cultura, Etnocentrismo e Relativismo Cultural',
+        sex_exatas: 'Lista Intensiva: Funções Trigonométricas + Hidrostática (Stevin e Pascal)',
+        atual: 'Transição Energética, Hidrelétricas na Amazônia e Impactos Socioambientais',
+        red: 'Como evitar o senso comum e aprofundar a argumentação filosófica'
+      },
+      {
+        mat: 'Relações Trigonométricas Fundamentais, Adição de Arcos e Arco Duplo',
+        hist: 'Primeiro Reinado e Período Regencial (Revoltas Regenciais: Cabanagem no Pará/Amazônia!)',
+        acre: 'Criação das Reservas Extrativistas (RESEX Chico Mendes) e Unidades de Conservação no Acre',
+        fis: 'Hidrostática II: Princípio de Arquimedes (Empuxo) e Flutuação',
+        geo: 'Fontes de Energia II: Hidrelétricas, Biomassa, Eólica, Solar e Pré-Sal',
+        quim: 'Termoquímica I: Processos Endotérmicos/Exotérmicos, Entalpia e Equação Termoquímica',
+        ling: 'Interpretação de Poemas e Prosa do Modernismo 2ª Fase (Graciliano Ramos, Jorge Amado)',
+        bio: 'Botânica II: Gimnospermas, Angiospermas e Histologia/Fisiologia Vegetal',
+        filo: 'Movimentos Sociais, Democracia, Cidadania e Direitos das Minorias',
+        sex_exatas: 'Revisão Mensal de Exatas: Empuxo + Termoquímica Básica',
+        atual: 'Economia Circular, Consumo Consciente e Gestão de Resíduos Sólidos',
+        red: 'Prática Completa de Redação 06: Tema Eixo Trabalho & Transformações Sociais'
+      },
+
+      // ==================== MAIO ====================
+      {
+        mat: 'Geometria Plana I: Ângulos, Paralelismo, Triângulos e Congruência/Semelhança',
+        hist: 'Segundo Reinado I: Política Interna, Parlamentarismo às Avessas e Economia Cafeeira',
+        acre: 'Economia Atual do Acre: Setor Terciário, Extrativismo Sustentável (Castanha, Açaí, Látex) e Manejo Florestal',
+        fis: 'Termologia I: Escalas Termométricas e Dilatação Térmica (Linear, Superficial e Volumétrica)',
+        geo: 'Industrialização Brasileira: Da Era Vargas ao Neoliberalismo e Desconcentração Industrial',
+        quim: 'Termoquímica II: Lei de Hess, Energia de Ligação e Entalpia de Formação',
+        ling: 'Modernismo 3ª Fase (Clarice Lispector, Guimarães Rosa, João Cabral de Melo Neto)',
+        bio: 'Zoologia I: Poríferos, Cnidários, Platelmintos, Nematelmintos e Anelídeos',
+        filo: 'Ética e Bioética Contemporânea (Hans Jonas, Peter Singer e Jürgen Habermas)',
+        sex_exatas: 'Lista Intensiva: Semelhança de Triângulos + Lei de Hess (Universo Narrado & Assaad)',
+        atual: 'Bioética, Avanços da Medicina e Desigualdade no Acesso a Tecnologias Médicas',
+        red: 'Uso estratégico de dados estatísticos e alusões históricas na redação'
+      },
+      {
+        mat: 'Geometria Plana II: Relações Métricas no Triângulo Retângulo, Lei dos Senos e Cossenos',
+        hist: 'Segundo Reinado II: Guerra do Paraguai, Movimento Abolicionista e Queda da Monarquia',
+        acre: 'Infraestrutura e Integração do Acre: BR-364, BR-317 e a Estrada do Pacífico (Saída para o Peru)',
+        fis: 'Termologia II: Calorimetria (Calor Sensível, Calor Latente, Trocas de Calor e Mudanças de Fase)',
+        geo: 'Globalização, Blocos Econômicos e Comércio Internacional',
+        quim: 'Cinética Química I: Velocidade das Reações, Teoria das Colisões e Energia de Ativação',
+        ling: 'Literatura Contemporânea (Pós-1960), Poesia Concreta e Tropicalismo',
+        bio: 'Zoologia II: Moluscos, Artrópodes, Equinodermos e Cordados (Peixes a Mamíferos)',
+        filo: 'Filosofia da Ciência (Karl Popper, Thomas Kuhn) e Epistemologia',
+        sex_exatas: 'Lista Intensiva: Calorimetria e Trocas de Calor + Lei dos Cossenos',
+        atual: 'Comércio Exterior Brasileiro, Rota Bioceânica e Relações com a China',
+        red: 'Prática Completa de Redação 07: Tema Eixo Direitos Humanos & Vulnerabilidade'
+      },
+      {
+        mat: 'Geometria Plana III: Polígonos Regulares, Quadriláteros Notáveis e Círculo/Circunferência',
+        hist: 'Primeira República (República Velha): Política do Café com Leite, Coronelismo e Revoltas',
+        acre: 'Demografia e Urbanização do Acre: Concentração em Rio Branco e Cruzeiro do Sul e Rede Urbana',
+        fis: 'Termologia III: Propagação de Calor (Condução, Convecção, Irradiação) e Gases Ideais',
+        geo: 'Geopolítica Mundial: Nova Ordem Mundial, EUA, China, União Europeia e Oriente Médio',
+        quim: 'Cinética Química II: Fatores que Alteram a Velocidade (Catalisadores) e Lei da Velocidade',
+        ling: 'Gêneros Textuais Digitais, Charge, Tirinha, Infográfico e Intertextualidade',
+        bio: 'Fisiologia Humana I: Sistema Digestório e Sistema Respiratório',
+        filo: 'Trabalho, Alienação e Sociedade Contemporânea (Byung-Chul Han — Sociedade do Cansaço)',
+        sex_exatas: 'Lista Intensiva: Cinética Química + Propagação de Calor',
+        atual: 'Saúde Mental na Era Hiperconectada e Burnout Acadêmico/Profissional',
+        red: 'Como construir propostas de intervenção detalhadas para problemas regionais/sociais'
+      },
+      {
+        mat: 'Geometria Plana IV: Áreas de Figuras Planas (Triângulos, Quadriláteros, Círculo e Setores)',
+        hist: 'Era Vargas (1930–1945): Governo Provisório, Constitucional e Estado Novo',
+        acre: 'Cultura, Patrimônio e Identidade Acreana: Santo Daime, Festividades, Culinária e Povos da Floresta',
+        fis: 'Termodinâmica: Trabalho de um Gás, 1ª Lei da Termodinâmica, Máquinas Térmicas e Ciclo de Carnot',
+        geo: 'Geografia da Região Norte e Amazônia Legal: Zoneamento, ZFM (Zona Franca de Manaus) e Desafios',
+        quim: 'Equilíbrio Químico I: Constantes Kc e Kp e Deslocamento de Equilíbrio (Princípio de Le Chatelier)',
+        ling: 'Revisão Semestral de Linguagens: Interpretação de Questões Estilo ENEM/UFAC',
+        bio: 'Fisiologia Humana II: Sistema Cardiovascular e Sistema Imunológico',
+        filo: 'Revisão Semestral de Filosofia e Sociologia (Questões Comentadas)',
+        sex_exatas: 'Revisão Mensal de Exatas: Áreas Planas + 1ª Lei da Termodinâmica + Le Chatelier',
+        atual: 'Soberania Nacional na Amazônia, Biopirataria e Desenvolvimento Sustentável',
+        red: 'Prática Completa de Redação 08: Tema Eixo Cultura, Patrimônio & Memória'
+      },
+
+      // ==================== JUNHO ====================
+      {
+        mat: 'Geometria Espacial I: Poliedros (Relação de Euler), Prismas e Cubos/Paralelepípedos',
+        hist: 'Primeira Guerra Mundial, Revolução Russa de 1917 e Crise de 1929',
+        acre: 'Revisão Regional I: Mapa Mental Completo da Formação Territorial do Acre (1879 a 1962)',
+        fis: 'Óptica Geométrica I: Princípios da Óptica, Reflexão da Luz e Espelhos Planos',
+        geo: 'Geografia do Brasil: Divisões Regionais (IBGE e Complexos Regionais de Pedro Pinchas Geiger)',
+        quim: 'Equilíbrio Iônico I: Ácidos e Bases Fracos, Ka, Kb e Grau de Ionização',
+        ling: 'Coesão Referencial e Sequencial + Vícios de Linguagem e Ambiguidade',
+        bio: 'Fisiologia Humana III: Sistema Excretor e Sistema Nervoso',
+        filo: 'Estética e Filosofia da Arte (Platão, Aristóteles, Kant e Walter Benjamin)',
+        sex_exatas: 'Lista Intensiva: Prismas e Cubos + Espelhos Planos (Universo Narrado & Boaro)',
+        atual: 'Segurança Pública, Crime Organizado em Regiões de Fronteira e Políticas de Estado',
+        red: 'Análise Detalhada das 5 Competências: Como sair dos 840 para 960+'
+      },
+      {
+        mat: 'Geometria Espacial II: Pirâmides e Troncos de Pirâmide (Áreas e Volumes)',
+        hist: 'Regimes Totalitários (Nazismo, Fascismo, Stalinismo) e Segunda Guerra Mundial',
+        acre: 'Revisão Regional II: Conflitos Socioambientais na Amazônia — Garimpo Ilegal, Grilagem e Mercúrio',
+        fis: 'Óptica Geométrica II: Espelhos Esféricos (Côncavos e Convexos) e Equação de Gauss',
+        geo: 'Recursos Minerais do Brasil (Carajás, Quadrilátero Ferrífero) e Exploração na Amazônia',
+        quim: 'Equilíbrio Iônico II: pH, pOH, Escala de pH e Produto Iônico da Água (Kw)',
+        ling: 'Tipologia Textual: Dissertação, Narração, Descrição, Injunção e Exposição',
+        bio: 'Fisiologia Humana IV: Sistema Endócrino e Sistema Reprodutor / Métodos Contraceptivos',
+        filo: 'Direitos Humanos, Declaração Universal de 1948 e Justiça Social (John Rawls)',
+        sex_exatas: 'Lista Intensiva: Cálculo de pH e pOH + Espelhos Esféricos (Assaad & Boaro)',
+        atual: 'Crise Humanitária Yanomami e Saúde Indígena no Brasil',
+        red: 'Prática Completa de Redação 09: Tema Eixo Povos Originários & Meio Ambiente'
+      },
+      {
+        mat: 'Geometria Espacial III: Cilindros e Cones (Áreas, Volumes e Secções)',
+        hist: 'Guerra Fria: Bipolaridade, Corrida Espacial, Guerra da Coreia, Vietnã e Crise dos Mísseis',
+        acre: 'Estudo de Caso UFAC: A Importância dos Rios Voadores e da Evapotranspiração Amazônica para o Brasil',
+        fis: 'Óptica Geométrica III: Refração da Luz, Lei de Snell-Descartes e Reflexão Total',
+        geo: 'Redes de Transporte e Logística no Brasil (Rodoviário, Hidroviário, Ferroviário)',
+        quim: 'Hidrólise Salina, Solução Tampão e Produto de Solubilidade (Kps)',
+        ling: 'Semântica e Estilística: Polissemia, Homonímia, Paronímia e Efeitos de Sentido',
+        bio: 'Genética I: 1ª Lei de Mendel, Cruzamentos, Heredogramas e Probabilidade Genética',
+        filo: 'Sociologia do Trabalho: Taylorismo, Fordismo, Toyotismo e Uberização',
+        sex_exatas: 'Lista Intensiva: Cilindros e Cones + Lei de Snell (Universo Narrado & Boaro)',
+        atual: 'Precarização do Trabalho, Economia de Plataforma e Direitos Trabalhistas',
+        red: 'Como criar títulos (quando opcionais) e melhorar a fluidez da leitura'
+      },
+      {
+        mat: 'Geometria Espacial IV: Esferas, Partes da Esfera e Inscrição/Circunscrição de Sólidos',
+        hist: 'Descolonização da África e da Ásia e Revolução Chinesa',
+        acre: 'Simulado Temático Regional: 25 Questões Exclusivas de História e Geografia do Acre/Amazônia',
+        fis: 'Óptica Geométrica IV: Lentes Esféricas e Óptica da Visão (Miopia, Hipermetropia, Astigmatismo)',
+        geo: 'Geografia da Região Nordeste e Centro-Oeste: Fronteira Agrícola (MATOPIBA) e Cerrado',
+        quim: 'Eletroquímica I: Pilhas de Daniell, Potenciais de Redução e Espontaneidade',
+        ling: 'Leitura Crítica de Textos Jornalísticos, Publicitários e Científicos',
+        bio: 'Genética II: Polialelia, Sistema ABO, Fator Rh e Eritroblastose Fetal',
+        filo: 'Gênero, Violência Simbólica e Desigualdades Estruturais na Sociedade Brasileira',
+        sex_exatas: 'Revisão Mensal de Exatas: Esferas + Lentes/Óptica da Visão + Pilhas',
+        atual: 'Violência contra a Mulher e Políticas de Proteção no Brasil',
+        red: 'Prática Completa de Redação 10: Tema Eixo Violência & Direitos Sociais'
+      },
+
+      // ==================== JULHO ====================
+      {
+        mat: 'Revisão Geral 1º Semestre: Funções + Geometria Plana e Espacial (Listas Mistas)',
+        hist: 'Brasil República (1945–1964): Populismo (Dutra, Vargas II, JK, Jânio e João Goulart)',
+        acre: 'Revisão Acre: Da Borracha à Economia Verde — Linha do Tempo Integrada',
+        fis: 'Ondulatória I: Classificação das Ondas, Equação Fundamental (v = λ.f) e Fenômenos Ondulatórios',
+        geo: 'Geografia da Região Sudeste e Sul: Dinâmica Econômica, Industrial e Ambiental',
+        quim: 'Eletroquímica II: Eletrólise Ígnea, Eletrólise Aquosa e Leis de Faraday',
+        ling: 'Revisão de Gramática Aplicada ao Texto: Pontuação, Crase e Concordância',
+        bio: 'Genética III: 2ª Lei de Mendel, Linkage e Determinação do Sexo',
+        filo: 'Filosofia Política Contemporânea: Liberalismo, Socialismo e Social-Democracia',
+        sex_exatas: 'Lista Intensiva: Eletrólise + Equação Fundamental das Ondas (Assaad & Boaro)',
+        atual: 'Balanço do 1º Semestre: Principais Fatos do Brasil e do Mundo',
+        red: 'Revisão de Estruturas Argumentativas e Banco de Repertórios por Eixo'
+      },
+      {
+        mat: 'Análise Combinatória I: Princípio Fundamental da Contagem (PFC) e Fatorial',
+        hist: 'Regime Militar no Brasil (1964–1985): AI-5, Milagre Econômico, Censura e Projetos na Amazônia (Transamazônica/PIN)',
+        acre: 'Os Grandes Projetos da Ditadura Militar na Amazônia e seus Reflexos no Acre (INCRA e Colonização)',
+        fis: 'Ondulatória II: Acústica (Altura, Intensidade, Timbre), Efeito Doppler e Cordas/Tubos Sonoros',
+        geo: 'Geopolítica da Água, Aquíferos (Alter do Chão e Guarani) e Crise Hídrica',
+        quim: 'Introdução à Química Orgânica: Postulados de Kekulé, Classificação de Carbonos e Cadeias',
+        ling: 'Funções do "QUE" e do "SE" + Literatura e Música de Protesto na Ditadura',
+        bio: 'Biotecnologia: Engenharia Genética, PCR, Transgênicos, Clonagem e Células-Tronco',
+        filo: 'Mídia, Opinião Pública, Fake News e Pós-Verdade (Zygmunt Bauman / Byung-Chul Han)',
+        sex_exatas: 'Lista Intensiva: Princípio Fundamental da Contagem + Acústica',
+        atual: 'Desinformação, Regulação das Redes e Democracia no Século XXI',
+        red: 'Prática Completa de Redação 11: Tema Eixo Comunicação, Mídia & Democracia'
+      },
+      {
+        mat: 'Análise Combinatória II: Permutações (Simples, com Repetição, Circular), Arranjos e Combinações',
+        hist: 'Redemocratização do Brasil, Constituição de 1988 e Nova República (Sarney a Lula/Dilma)',
+        acre: 'A Constituição de 1988 e os Direitos dos Povos Indígenas e Populações Tradicionais do Acre',
+        fis: 'Eletrostática I: Carga Elétrica, Processos de Eletrização e Lei de Coulomb',
+        geo: 'Demografia e Urbanização Mundial: Megacidades, Cidades Globais e Refugiados',
+        quim: 'Hidrocarbonetos: Alcanos, Alcenos, Alcinos, Ciclanos, Aromáticos e Nomenclatura IUPAC',
+        ling: 'Variação Linguística e Preconceito Linguístico (Marcos Bagno) — Foco ENEM/UFAC',
+        bio: 'Evolução Biológica I: Lamarckismo, Darwinismo e Neodarwinismo (Teoria Sintética)',
+        filo: 'Sociologia da Educação e Mobilidade Social no Brasil',
+        sex_exatas: 'Lista Intensiva: Combinação x Arranjo + Lei de Coulomb (Universo Narrado & Boaro)',
+        atual: 'Crise Migratória Global e Fronteiras na América Latina (Acre como Rota Migratória)',
+        red: 'Como evitar tangenciamento do tema e garantir pertinência produtiva do repertório'
+      },
+      {
+        mat: 'Probabilidade I: Espaço Amostral, Eventos, Probabilidade da União e Complementar',
+        hist: 'América Latina no Século XX: Revolução Mexicana, Revolução Cubana e Ditaduras no Cone Sul',
+        acre: 'Fronteira Trinacional (Brasil–Peru–Bolívia): Tríplice Fronteira em Assis Brasil e Integração Regional',
+        fis: 'Eletrostática II: Campo Elétrico, Linhas de Força e Potencial Elétrico',
+        geo: 'Globalização e Nova Divisão Internacional do Trabalho (DIT)',
+        quim: 'Funções Orgânicas Oxigenadas: Álcool, Fenol, Enol, Éter, Aldeído, Cetona, Ácido Carboxílico e Éster',
+        ling: 'Interpretação de Texto Literário Moderno e Contemporâneo',
+        bio: 'Evolução Biológica II: Especiação, Evidências da Evolução e Evolução Humana',
+        filo: 'Direitos dos Animais, Ética Ambiental e Ecologia Profunda',
+        sex_exatas: 'Revisão Mensal de Exatas: Probabilidade + Campo Elétrico + Funções Oxigenadas',
+        atual: 'Bioeconomia, Fármacos da Floresta e Patentes Internacionais',
+        red: 'Prática Completa de Redação 12: Tema Eixo Ciência, Ética & Tecnologia'
+      },
+
+      // ==================== AGOSTO ====================
+      {
+        mat: 'Probabilidade II: Probabilidade Condicional, Eventos Independentes e Distribuição Binomial',
+        hist: 'Revisão de História Antiga e Medieval: Questões de Alta Complexidade',
+        acre: 'Bacia Amazônica e Rios do Acre: Regime Fluvial (Cheias Históricas do Rio Acre) e Impactos Urbanos',
+        fis: 'Eletrostática III: Trabalho da Força Elétrica, Equipotenciais e Condutores em Equilíbrio',
+        geo: 'Climatologia Aplicada: Mudanças Climáticas, COPs, Acordo de Paris e Créditos de Carbono',
+        quim: 'Funções Orgânicas Nitrogenadas (Amina, Amida, Nitrocomposto, Nitrila) e Haletos Orgânicos',
+        ling: 'Arte Contemporânea, Vanguardas Europeias e Expressões Artísticas no Brasil',
+        bio: 'Ecologia I: Conceitos Fundamentais, Cadeias/Teias Alimentares e Pirâmides Ecológicas',
+        filo: 'Filosofia da Linguagem (Wittgenstein) e Comunicação',
+        sex_exatas: 'Lista Intensiva: Probabilidade Condicional + Funções Nitrogenadas (Universo Narrado & Assaad)',
+        atual: 'Eventos Climáticos Extremos no Brasil (Secas e Enchentes na Amazônia e Sul)',
+        red: 'Refinamento de Estilo: Vocabulário preciso e conectivos sofisticados'
+      },
+      {
+        mat: 'Estatística I: Tabelas, Gráficos, Média Aritmética (Simples e Ponderada), Moda e Mediana',
+        hist: 'Revisão de Brasil Colônia: Economia, Sociedade e Movimentos Emancipacionistas',
+        acre: 'Unidades de Conservação Federais e Estaduais no Acre (PARNA Serra do Divisor, RESEX Cazumbá-Iracema)',
+        fis: 'Eletrodinâmica I: Corrente Elétrica, Tensão (ddp), Resistência Elétrica e Leis de Ohm',
+        geo: 'Biomas Mundiais e Hotspots de Biodiversidade (Amazônia e Cerrado em Foco)',
+        quim: 'Propriedades Físicas dos Compostos Orgânicos (Ponto de Ebulição, Solubilidade e Acidez/Basicidade)',
+        ling: 'Intertextualidade: Paráfrase, Paródia, Epígrafe, Citação e Alusão',
+        bio: 'Ecologia II: Ciclos Biogeoquímicos (Água, Carbono, Nitrogênio e Oxigênio)',
+        filo: 'Sociologia da Violência, Criminalidade e Sistema Carcerário no Brasil',
+        sex_exatas: 'Lista Intensiva: Estatística (Média, Moda, Mediana) + 1ª e 2ª Leis de Ohm',
+        atual: 'Sistema Prisional Brasileiro, Ressocialização e Segurança Pública',
+        red: 'Prática Completa de Redação 13: Tema Eixo Segurança Pública & Justiça'
+      },
+      {
+        mat: 'Estatística II: Medidas de Dispersão (Amplitude, Variância e Desvio Padrão)',
+        hist: 'Revisão de Brasil Império: Primeiro Reinado, Regências e Segundo Reinado',
+        acre: 'Geopolítica da Amazônia Internacional: OTCA, Soberania e Vigilância de Fronteiras (SIVAM/SIPAM)',
+        fis: 'Eletrodinâmica II: Associação de Resistores (Série, Paralelo e Mista) e Curto-Circuito',
+        geo: 'Geopolítica Contemporânea: Conflitos na Europa Oriental, Oriente Médio e Ásia-Pacífico',
+        quim: 'Isomeria Plana (Cadeia, Posição, Função, Metameria e Tautomeria)',
+        ling: 'Gêneros Literários (Épico, Lírico, Dramático) e Análise de Questões da UFAC',
+        bio: 'Ecologia III: Dinâmica de Populações e Relações Ecológicas (Harmônicas e Desarmônicas)',
+        filo: 'Estado Democrático de Direito, Constituição e Participação Popular',
+        sex_exatas: 'Lista Intensiva: Desvio Padrão + Associação de Resistores (Universo Narrado & Boaro)',
+        atual: 'Papel do Brasil na ONU, G20 e BRICS',
+        red: 'Treino de Redação em Tempo Reduzido (1h05min) com foco em clareza'
+      },
+      {
+        mat: 'Matrizes e Determinantes (2x2 e 3x3) e Sistemas Lineares (Discussão e Resolução)',
+        hist: 'Revisão de História Contemporânea: Guerras Mundiais e Guerra Fria',
+        acre: 'Povos Indígenas do Acre Hoje: Terras Indígenas (Kaxinawá/Huni Kuin, Ashaninka, Yawanawá) e Cultura Viva',
+        fis: 'Eletrodinâmica III: Potência Elétrica, Consumo de Energia (kWh) e Efeito Joule',
+        geo: 'Cartografia Temática e Interpretação de Mapas e Anamorfoses no Vestibular',
+        quim: 'Isomeria Espacial: Isomeria Geométrica (Cis-Trans / E-Z) e Isomeria Óptica (Carbono Quiral)',
+        ling: 'Semântica dos Conectivos e Operadores Argumentativos',
+        bio: 'Ecologia IV: Sucessão Ecológica e Desequilíbrios Ambientais (Eutrofização, Magnificação Trófica)',
+        filo: 'Filosofia Moderna e Contemporânea: Revisão Comparativa dos Principais Pensadores',
+        sex_exatas: 'Revisão Mensal de Exatas: Potência Elétrica + Isomeria Óptica (Boaro & Assaad)',
+        atual: 'Preservação das Línguas e Culturas Indígenas na Amazônia',
+        red: 'Prática Completa de Redação 14: Tema Eixo Diversidade & Inclusão Social'
+      },
+
+      // ==================== SETEMBRO ====================
+      {
+        mat: 'Geometria Analítica I: Ponto, Distância entre Dois Pontos, Ponto Médio e Baricentro',
+        hist: 'Revisão de Brasil República: República Velha e Era Vargas',
+        acre: 'Revisão Geral Acre & Amazônia I: Questões Comentadas de Provas Anteriores da UFAC',
+        fis: 'Eletrodinâmica IV: Geradores, Receptores, Leis de Kirchhoff e Medidores Elétricos (Amperímetro/Voltímetro)',
+        geo: 'Geografia Econômica do Brasil: Agropecuária, Indústria e Setor de Serviços',
+        quim: 'Reações Orgânicas I: Substituição e Adição (Alcanos, Alcenos, Alcinos e Aromáticos)',
+        ling: 'Educação Física, Corpo, Saúde e Práticas Corporais na Prova de Linguagens',
+        bio: 'Revisão Integrada de Citologia e Bioquímica (Questões de Alta Complexidade)',
+        filo: 'Sociologia da Cultura, Patrimônio Imaterial e Identidade Nacional',
+        sex_exatas: 'Lista Intensiva: Geradores e Medidores Elétricos + Reações de Adição (Boaro & Assaad)',
+        atual: 'Esporte, Inclusão Social e Saúde Pública no Brasil',
+        red: 'Como evitar clichês e construir introduções originais para qualquer tema'
+      },
+      {
+        mat: 'Geometria Analítica II: Equação da Reta (Geral e Reduzida), Paralelismo e Perpendicularidade',
+        hist: 'Revisão de Brasil República: Período Populista, Ditadura Militar e Nova República',
+        acre: 'Aspectos Socioeconômicos do Acre: IDH, Saneamento, Educação e Desafios Logísticos dos Municípios Isolados (Jordão, Santa Rosa do Purus)',
+        fis: 'Eletrodinâmica V: Capacitores (Associação e Energia Armazenada)',
+        geo: 'Questão Ambiental Brasileira: Código Florestal, Unidades de Conservação e Amazônia',
+        quim: 'Reações Orgânicas II: Eliminação, Oxidação (Branda, Enérgica, Ozonólise) e Esterificação/Saponificação',
+        ling: 'Língua Estrangeira (Inglês ou Espanhol): Estratégias de Leitura e Vocabulário de Vestibular',
+        bio: 'Revisão Integrada de Fisiologia Humana (Sistemas Integrados)',
+        filo: 'Ética, Política e Cidadania Digital',
+        sex_exatas: 'Lista Intensiva: Geometria Analítica (Retas) + Oxidação Orgânica (Universo Narrado & Assaad)',
+        atual: 'Desigualdades Regionais no Brasil: Norte e Nordeste frente ao Centro-Sul',
+        red: 'Prática Completa de Redação 15: Tema Eixo Desigualdades Regionais & Infraestrutura'
+      },
+      {
+        mat: 'Geometria Analítica III: Equação da Circunferência e Posições Relativas',
+        hist: 'História da África e Cultura Afro-Brasileira (Reinos Africanos, Diáspora e Resistência)',
+        acre: 'História da Saúde e Medicina na Amazônia: Doenças Tropicais, Oswaldo Cruz na Madeira-Mamoré e Saúde Pública no Acre',
+        fis: 'Eletromagnetismo I: Ímãs, Campo Magnético Gerado por Corrente (Fio, Espira, Solenoide)',
+        geo: 'Geopolítica dos Recursos Naturais: Terras Raras, Lítio, Petróleo e Biodiversidade',
+        quim: 'Polímeros Sintéticos e Naturais, Plásticos Biodegradáveis e Química Ambiental',
+        ling: 'Literatura Afro-Brasileira e Indígena Contemporânea (Conceição Evaristo, Daniel Munduruku, Ailton Krenak)',
+        bio: 'Revisão Integrada de Genética e Biotecnologia (Resolução de Questões Estilo Medicina)',
+        filo: 'Pensamento de Ailton Krenak, Davi Kopenawa e Filosofias Indígenas Contemporâneas',
+        sex_exatas: 'Lista Intensiva: Circunferência + Campo Magnético (Universo Narrado & Boaro)',
+        atual: 'Ailton Krenak, Sustentabilidade e O Futuro da Humanidade',
+        red: 'Treino de Redação: Uso de pensadores contemporâneos (Krenak, Bauman, Han)'
+      },
+      {
+        mat: 'Números Complexos e Polinômios (Relações de Girard e Teorema do Resto — Foco Vestibulares Tradicionais/UFAC)',
+        hist: 'Revisão Temática: Movimentos Sociais no Brasil (Canudos, Contestado, Vacina, Chibata, Diretas Já)',
+        acre: 'Revisão Geral Acre & Amazônia II: Simulado Temático de 30 Questões + Análise de Mapas',
+        fis: 'Eletromagnetismo II: Força Magnética sobre Carga e Fio Condutor + Indução Eletromagnética (Faraday-Lenz)',
+        geo: 'Revisão Integrada de Geografia Física (Clima, Relevo, Hidrografia e Biomas)',
+        quim: 'Radioatividade: Emissões Alfa, Beta, Gama, Meia-Vida, Fissão e Fusão Nuclear',
+        ling: 'Revisão de Figuras de Linguagem, Funções da Linguagem e Interpretação',
+        bio: 'Revisão Integrada de Ecologia e Evolução (Questões de Alta Incidência)',
+        filo: 'Revisão Integrada de Sociologia Brasileira',
+        sex_exatas: 'Revisão Mensal de Exatas: Indução Eletromagnética + Radioatividade (Meia-Vida)',
+        atual: 'Energia Nuclear, Medicina Nuclear e Avanços Científicos',
+        red: 'Prática Completa de Redação 16: Tema Eixo Ciência, Saúde & Sociedade'
+      },
+
+      // ==================== OUTUBRO ====================
+      {
+        mat: 'Revisão Cirúrgica Exatas 1: Razão, Proporção, Porcentagem e Matemática Financeira',
+        hist: 'Revisão Cirúrgica História 1: Brasil Colônia e Brasil Império (Questões Comentadas)',
+        acre: 'Tópicos Quentes UFAC 1: Revolução Acreana, Tratado de Petrópolis e Fronteiras do Acre',
+        fis: 'Física Moderna: Efeito Fotoelétrico, Dualidade Onda-Partícula e Modelos Atômicos',
+        geo: 'Revisão Cirúrgica Geografia 1: Geografia Agrária e Urbanização Brasileira',
+        quim: 'Revisão Cirúrgica Química 1: Estequiometria, Soluções e Termoquímica',
+        ling: 'Treino de Velocidade em Linguagens: 45 Questões Cronometradas',
+        bio: 'Revisão Cirúrgica Biologia 1: Microbiologia, Parasitologia e Doenças Endêmicas da Amazônia',
+        filo: 'Revisão Cirúrgica Humanas 1: Filosofia Antiga, Moderna e Contratualistas',
+        sex_exatas: 'Maratona de Questões: 40 Questões Mistas de Matemática + Física Moderna',
+        atual: 'Retrospectiva Atualidades 1: Meio Ambiente, Clima e Amazônia',
+        red: 'Prática Completa de Redação 17: Simulação Real de Prova'
+      },
+      {
+        mat: 'Revisão Cirúrgica Exatas 2: Funções (Afim, Quadrática, Exponencial e Logarítmica)',
+        hist: 'Revisão Cirúrgica História 2: Era Vargas, Ditadura Militar e Redemocratização',
+        acre: 'Tópicos Quentes UFAC 2: Chico Mendes, Empates, Reservas Extrativistas e Desmatamento',
+        fis: 'Revisão Cirúrgica Física 1: Cinemática, Leis de Newton, Trabalho e Energia',
+        geo: 'Revisão Cirúrgica Geografia 2: Climatologia, Hidrografia e Domínios Morfoclimáticos',
+        quim: 'Revisão Cirúrgica Química 2: Equilíbrio Químico, pH e Eletroquímica',
+        ling: 'Revisão de Literatura Brasileira: Do Barroco ao Contemporâneo (Obras e Estilos)',
+        bio: 'Revisão Cirúrgica Biologia 2: Imunologia, Vacinas, Soros e Fisiologia Humana',
+        filo: 'Revisão Cirúrgica Humanas 2: Sociologia Clássica e Contemporânea',
+        sex_exatas: 'Maratona de Questões: 40 Questões Mistas de Química + Mecânica',
+        atual: 'Retrospectiva Atualidades 2: Saúde Pública, Ciência e Bioética',
+        red: 'Revisão dos Seus Próprios Erros de Redação ao Longo do Ano'
+      },
+      {
+        mat: 'Revisão Cirúrgica Exatas 3: Geometria Plana e Geometria Espacial (Volumes e Áreas)',
+        hist: 'Revisão Cirúrgica História 3: Idade Moderna, Revoluções e Século XX',
+        acre: 'Tópicos Quentes UFAC 3: Hidrografia do Acre, Clima (Friagem), Relevo e Economia Regional',
+        fis: 'Revisão Cirúrgica Física 2: Termologia, Calorimetria, Óptica e Ondulatória',
+        geo: 'Revisão Cirúrgica Geografia 3: Geopolítica Mundial e Globalização',
+        quim: 'Revisão Cirúrgica Química 3: Funções Orgânicas, Isomeria e Reações Orgânicas',
+        ling: 'Revisão de Gramática Essencial e Interpretação de Textos Complexos',
+        bio: 'Revisão Cirúrgica Biologia 3: Ecologia, Ciclos Biogeoquímicos e Impactos Ambientais',
+        filo: 'Revisão Cirúrgica Humanas 3: Ética, Cidadania e Direitos Humanos',
+        sex_exatas: 'Maratona de Questões: 40 Questões Mistas de Geometria + Eletrodinâmica',
+        atual: 'Retrospectiva Atualidades 3: Tecnologia, Trabalho e Educação',
+        red: 'Prática Completa de Redação 18: Simulação Real de Prova'
+      },
+      {
+        mat: 'Revisão Cirúrgica Exatas 4: Análise Combinatória, Probabilidade e Estatística',
+        hist: 'Resolução Comentada de Provas Antigas de Humanas (ENEM & UFAC)',
+        acre: 'Revisão Relâmpago Acre & Amazônia: Todos os 16 Tópicos do Dossiê em Flashcards',
+        fis: 'Revisão Cirúrgica Física 3: Eletrodinâmica e Eletromagnetismo',
+        geo: 'Resolução Comentada de Provas Antigas de Geografia (ENEM & UFAC)',
+        quim: 'Resolução Comentada de Provas Antigas de Química (ENEM & UFAC)',
+        ling: 'Resolução Comentada de Provas Antigas de Linguagens (ENEM & UFAC)',
+        bio: 'Resolução Comentada de Provas Antigas de Biologia (ENEM & UFAC)',
+        filo: 'Resolução Comentada de Provas Antigas de Filosofia/Sociologia',
+        sex_exatas: 'Maratona Pré-ENEM: 45 Questões Mistas de Natureza e Matemática',
+        atual: 'Apostas Temáticas de Redação e Atualidades para Novembro/Janeiro',
+        red: 'Prática Completa de Redação 19: Revisão de Esqueleto Coringa'
+      },
+
+      // ==================== NOVEMBRO ====================
+      {
+        mat: 'Semana ENEM Dia 1 (Foco Humanas/Linguagens/Redação): Revisão Leve de Matemática Básica',
+        hist: 'Revisão Final Humanas: Linha do Tempo Brasil & Mundo (Pontos-Chave)',
+        acre: 'Revisão Final Regional: Amazônia Legal, Povos Indígenas e Questão Ambiental',
+        fis: 'Revisão Leve: Conceitos Teóricos de Ondulatória, Óptica e Energia',
+        geo: 'Revisão Final Geografia: Questão Agrária, Meio Ambiente e Demografia',
+        quim: 'Revisão Leve: Química Ambiental, Chuva Ácida, Efeito Estufa e Polímeros',
+        ling: 'Revisão Final Linguagens: Funções da Linguagem, Figuras e Variação Linguística',
+        bio: 'Revisão Leve: Ecologia e Saúde Pública (Vacinas e Epidemias)',
+        filo: 'Revisão Final Filosofia & Sociologia: Citações e Conceitos para Redação',
+        sex_exatas: 'Descanso Cognitivo Estratégico + Leitura de Redações Nota 1000 (Sem Exaustão)',
+        atual: 'Revisão Mental de Repertórios Socioculturais',
+        red: 'Checklist Final de Redação (5 Competências) — Preparação Prova ENEM Dia 1'
+      },
+      {
+        mat: 'Semana ENEM Dia 2 (Foco Natureza & Matemática): Fórmulas Essenciais e Razão/Proporção',
+        hist: 'Análise Pós-Prova Dia 1 e Manutenção de Ritmo para Vestibular UFAC',
+        acre: 'Aprofundamento Específico UFAC: História Política do Acre (Gálvez, Plácido, Guiomard Santos)',
+        fis: 'Revisão Final Natureza: Formulário de Mecânica, Termologia, Ondulatória e Eletrodinâmica',
+        geo: 'Geografia Específica da Amazônia Ocidental e Fronteiras do Acre',
+        quim: 'Revisão Final Natureza: Estequiometria, pH, Pilhas/Eletrólise e Funções Orgânicas',
+        ling: 'Leitura e Interpretação de Textos Literários Regionais e Nacionais',
+        bio: 'Revisão Final Natureza: Citologia, Fisiologia, Genética e Ecologia',
+        filo: 'Ética na Ciência e Bioética Médica',
+        sex_exatas: 'Revisão Leve de Fórmulas + Descanso Pré-Prova Dia 2',
+        atual: 'Atualidades da Amazônia e do Estado do Acre',
+        red: 'Análise da Redação do ENEM e Ajustes para o Estilo UFAC'
+      },
+      {
+        mat: 'Transição Pós-ENEM → Foco Total UFAC (Prova em Janeiro): Geometria e Trigonometria',
+        hist: 'História da Amazônia Colonial e Imperial: Drogas do Sertão, Diretório Pombalino e Cabanagem',
+        acre: 'Estudo Detalhado: Os 22 Municípios do Acre, Microrregiões e Dinâmica Socioeconômica',
+        fis: 'Resolução de Provas Antigas da UFAC — Bloco Física (Mecânica e Termodinâmica)',
+        geo: 'Geografia Física da Amazônia: Floresta de Igapó, Várzea e Terra Firme + Solos Amazônicos',
+        quim: 'Resolução de Provas Antigas da UFAC — Bloco Química Geral e Físico-Química',
+        ling: 'Gramática Normativa Aprofundada (Sintaxe, Concordância, Regência e Crase)',
+        bio: 'Parasitologia e Doenças Tropicais da Região Norte (Malária, Leishmaniose, Arboviroses, Hepatites)',
+        filo: 'Revisão de Filosofia Política e Sociologia Brasileira',
+        sex_exatas: 'Lista Específica Estilo UFAC: Funções, Logaritmos e Geometria Analítica',
+        atual: 'Políticas Públicas de Saúde na Amazônia e Atenção Primária',
+        red: 'Prática Completa de Redação 20: Tema Regional / Nacional Estilo UFAC'
+      },
+      {
+        mat: 'Aprofundamento UFAC: Análise Combinatória, Probabilidade e Sistemas Lineares',
+        hist: 'História do Brasil: Período Regencial, Segundo Reinado e Crise da República Oligárquica',
+        acre: 'A Cultura da Borracha: O Cotidiano nos Seringais, o Barracão, o Regatão e a Resistência',
+        fis: 'Resolução de Provas Antigas da UFAC — Bloco Física (Óptica, Ondas e Eletromagnetismo)',
+        geo: 'Hidrovias Amazônicas, Bacia do Amazonas e Impactos de Grandes Obras na Região Norte',
+        quim: 'Resolução de Provas Antigas da UFAC — Bloco Química Orgânica e Ambiental',
+        ling: 'Escolas Literárias Brasileiras: Características, Autores e Obras Clássicas',
+        bio: 'Botânica e Zoologia Aplicadas à Biodiversidade Amazônica',
+        filo: 'Direitos Humanos, Meio Ambiente e Desenvolvimento Sustentável',
+        sex_exatas: 'Lista Específica Estilo UFAC: Estequiometria, Eletroquímica e Eletrodinâmica',
+        atual: 'COP Climática, Mercado de Carbono e Futuro da Floresta Amazônica',
+        red: 'Prática Completa de Redação 21: Correção Rigorosa com Foco em 960+'
+      },
+
+      // ==================== DEZEMBRO ====================
+      {
+        mat: 'Reta Final UFAC (Faltam 5 Semanas): Revisão Intensiva de Matemática Base + Geometria Plana',
+        hist: 'Revisão Intensiva História: Brasil Colônia e Império + Integração com Amazônia',
+        acre: 'Dossiê Acre Reta Final 1: Da Ocupação Indígena ao Tratado de Petrópolis (1903)',
+        fis: 'Revisão Intensiva Física: Cinemática, Dinâmica, Energia e Hidrostática',
+        geo: 'Revisão Intensiva Geografia: Cartografia, Climatologia e Relevo Brasileiro',
+        quim: 'Revisão Intensiva Química: Atomística, Ligações, Funções Inorgânicas e Estequiometria',
+        ling: 'Revisão Intensiva Linguagens: Interpretação, Semântica e Funções da Linguagem',
+        bio: 'Revisão Intensiva Biologia: Bioquímica, Citologia e Metabolismo Energético',
+        filo: 'Revisão Intensiva Humanas: Filosofia Antiga/Moderna e Clássicos da Sociologia',
+        sex_exatas: 'Simulado Focado Exatas UFAC: 40 Questões Cronometradas',
+        atual: 'Dossiê Atualidades do Ano: Principais Acontecimentos no Acre, Brasil e Mundo',
+        red: 'Prática Completa de Redação 22: Treino de Tempo e Caligrafia/Apresentação'
+      },
+      {
+        mat: 'Reta Final UFAC (Faltam 4 Semanas): Revisão Intensiva de Funções e Trigonometria',
+        hist: 'Revisão Intensiva História: Primeira República, Era Vargas e Ditadura Militar',
+        acre: 'Dossiê Acre Reta Final 2: Autonomismo (1962), Década de 1970, Chico Mendes e RESEX',
+        fis: 'Revisão Intensiva Física: Termologia, Calorimetria e Termodinâmica',
+        geo: 'Revisão Intensiva Geografia: Hidrografia, Domínios Morfoclimáticos e Meio Ambiente',
+        quim: 'Revisão Intensiva Química: Soluções, Termoquímica, Cinética e Equilíbrio Químico',
+        ling: 'Revisão Intensiva Linguagens: Gramática Aplicada (Crase, Concordância, Regência, Pontuação)',
+        bio: 'Revisão Intensiva Biologia: Fisiologia Humana Completa e Imunologia',
+        filo: 'Revisão Intensiva Humanas: Sociologia Brasileira e Movimentos Sociais',
+        sex_exatas: 'Simulado Focado Natureza UFAC: 45 Questões (Física, Química e Biologia)',
+        atual: 'Saúde, Ciência e Tecnologia no Brasil: Resumo Estratégico',
+        red: 'Prática Completa de Redação 23: Revisão de Repertórios Socioculturais'
+      },
+      {
+        mat: 'Reta Final UFAC (Faltam 3 Semanas): Geometria Espacial, Analítica e Combinatória/Probabilidade',
+        hist: 'Revisão Intensiva História: Idade Contemporânea, Guerras Mundiais e Guerra Fria',
+        acre: 'Dossiê Acre Reta Final 3: Geografia Física e Humana do Acre (Clima, Rios, Relevo, População e Economia)',
+        fis: 'Revisão Intensiva Física: Óptica Geométrica, Ondulatória, Eletrodinâmica e Eletromagnetismo',
+        geo: 'Revisão Intensiva Geografia: Urbanização, Industrialização, Energia e Geopolítica',
+        quim: 'Revisão Intensiva Química: Eletroquímica, Química Orgânica e Radioatividade',
+        ling: 'Revisão Intensiva Linguagens: Escolas Literárias e Literatura Contemporânea',
+        bio: 'Revisão Intensiva Biologia: Genética, Biotecnologia, Evolução e Ecologia',
+        filo: 'Revisão Intensiva Humanas: Ética, Bioética e Cidadania',
+        sex_exatas: 'Revisão do Caderno de Erros Anual (Exatas & Natureza)',
+        atual: 'Revisão Final de Atualidades Regionais e Nacionais',
+        red: 'Prática Completa de Redação 24: Última Redação Completa do Ano'
+      },
+      {
+        mat: 'Véspera da Prova UFAC (Janeiro): Revisão Leve de Fórmulas-Chave e Porcentagem/Estatística',
+        hist: 'Revisão Relâmpago de História Geral, Brasil e Amazônia (Mapas Mentais)',
+        acre: 'Revisão Final Acre & Amazônia: Checklist Definitivo Pré-Prova UFAC (Zero Dúvidas!)',
+        fis: 'Revisão Relâmpago de Física: Unidades do SI, Gráficos e Leis Fundamentais',
+        geo: 'Revisão Relâmpago de Geografia: Mapas do Brasil e da Amazônia',
+        quim: 'Revisão Relâmpago de Química: Tabela Periódica, Funções Orgânicas e Relações Molares',
+        ling: 'Revisão Relâmpago de Linguagens: Dicas de Leitura e Gestão de Tempo na Prova',
+        bio: 'Revisão Relâmpago de Biologia: Ciclos Biogeoquímicos, Doenças e Fisiologia',
+        filo: 'Revisão Relâmpago de Filosofia/Sociologia: Conceitos Fundamentais',
+        sex_exatas: 'Organização Final para a Prova de Janeiro: Documentos, Alimentação, Sono e Confiança!',
+        atual: 'Mentalidade de Aprovada: Visualização e Controle Emocional',
+        red: 'Leitura Rápida da Estrutura de Redação Nota 1000 + Descanso Mental Pleno'
+      }
+    ];
+
+    // =========================================================================
+    // 3. DOSSIÊ ACRE & AMAZÔNIA (16 TÓPICOS OBRIGATÓRIOS PARA UFAC)
+    // =========================================================================
+    const ACRE_TOPICS = [
+      {
+        id: 'ac_1',
+        category: 'historia',
+        title: '1. Povos Originários e os Geoglifos do Acre',
+        incidence: 'Altíssima Incidência',
+        summary: 'Antes da chegada de nordestinos e europeus, o território acreano era habitado por dezenas de etnias dos troncos linguísticos Pano, Aruak e Arawá. Os Geoglifos (estruturas geométricas escavadas no solo no leste do Acre) comprovam sociedades complexas e organizadas na Amazônia pré-colombiana.',
+        keywords: ['Troncos Pano, Aruak e Arawá', 'Geoglifos', 'Amazônia Pré-Colombiana', 'Resistência Indígena']
+      },
+      {
+        id: 'ac_2',
+        category: 'historia',
+        title: '2. Tratados Coloniais: Madri (1750) e Santo Ildefonso (1777)',
+        incidence: 'Alta Incidência',
+        summary: 'Pelo Tratado de Madri (princípio do Uti Possidetis) e pelo Tratado de Santo Ildefonso, a região onde hoje está o Acre pertencia legalmente à Coroa Espanhola (e posteriormente à Bolívia e ao Peru), o que gerou o impasse diplomático no final do século XIX.',
+        keywords: ['Uti Possidetis', 'Tratado de Madri', 'Domínio Boliviano/Peruano', 'Fronteiras']
+      },
+      {
+        id: 'ac_3',
+        category: 'historia',
+        title: '3. Primeiro Ciclo da Borracha (1879–1912) e Migração Nordestina',
+        incidence: 'Altíssima Incidência',
+        summary: 'Impulsionado pela industrialização automobilística (pneus/vulcanização) e pela grande seca de 1877 no Nordeste, milhares de nordestinos migraram para os seringais amazônicos sob o sistema de aviamento (endividamento permanente no barracão do seringalista).',
+        keywords: ['Sistema de Aviamento', 'Barracão e Regatão', 'Seca de 1877', 'Seringueiros']
+      },
+      {
+        id: 'ac_4',
+        category: 'historia',
+        title: '4. A Revolução Acreana (1899–1903) e Plácido de Castro',
+        incidence: 'Altíssima Incidência',
+        summary: 'Após a tentativa do espanhol Luis Gálvez (Estado Independente do Acre em 1899) e o arrendamento da região ao Bolivian Syndicate, os seringueiros liderados pelo gaúcho José Plácido de Castro pegaram em armas, vencendo batalhas decisivas em Xapuri, Volta da Empresa e Porto Acre.',
+        keywords: ['Luis Gálvez', 'Bolivian Syndicate', 'Plácido de Castro', 'Porto Acre e Xapuri']
+      },
+      {
+        id: 'ac_5',
+        category: 'historia',
+        title: '5. Tratado de Petrópolis (1903) e Estrada de Ferro Madeira-Mamoré',
+        incidence: 'Altíssima Incidência',
+        summary: 'Assinado em 17 de novembro de 1903 por intermediação do Barão do Rio Branco: o Brasil incorporou o Acre mediante pagamento de 2 milhões de libras esterlinas à Bolívia, cessão de terras no Mato Grosso e o compromisso de construir a Estrada de Ferro Madeira-Mamoré ("Ferrovia do Diabo").',
+        keywords: ['Barão do Rio Branco', '17 de Novembro de 1903', '2 Milhões de Libras', 'Madeira-Mamoré']
+      },
+      {
+        id: 'ac_6',
+        category: 'historia',
+        title: '6. Território Federal (1904) e Movimento Autonomista (1962)',
+        incidence: 'Alta Incidência',
+        summary: 'De 1904 a 1962, o Acre foi administrado diretamente pela União como Território Federal (dividido inicialmente em departamentos), sem direito a eleger governador ou bancada plena. A luta liderada por figuras como José Guiomard dos Santos culminou na Lei nº 4.070 (15/06/1962), elevando o Acre a Estado.',
+        keywords: ['Território Federal', 'Movimento Autonomista', 'José Guiomard dos Santos', '15 de Junho de 1962']
+      },
+      {
+        id: 'ac_7',
+        category: 'historia',
+        title: '7. Segundo Ciclo da Borracha e os "Soldados da Borracha"',
+        incidence: 'Média-Alta Incidência',
+        summary: 'Durante a 2ª Guerra Mundial (Acordos de Washington, 1942), com a tomada dos seringais asiáticos pelo Japão, o governo Vargas recrutou cerca de 55 mil nordestinos ("Soldados da Borracha") para extrair látex para os Aliados, muitos abandonados sem assistência após o fim da guerra.',
+        keywords: ['Acordos de Washington', 'Segunda Guerra Mundial', 'SEMTA', 'Soldados da Borracha']
+      },
+      {
+        id: 'ac_8',
+        category: 'historia',
+        title: '8. Chico Mendes, os "Empates" e as Reservas Extrativistas (RESEX)',
+        incidence: 'Altíssima Incidência',
+        summary: 'Na década de 1970/80, com a abertura da BR-364 e a expansão da pecuária extensiva ("paulistas"), Chico Mendes e Wilson Pinheiro lideraram os "empates" (resistência pacífica contra a derrubada da floresta). O legado de Chico Mendes (assassinado em 1988) originou o modelo das Reservas Extrativistas (RESEX).',
+        keywords: ['Chico Mendes', 'Wilson Pinheiro', 'Empates', 'RESEX Chico Mendes', 'Aliança dos Povos da Floresta']
+      },
+      {
+        id: 'ac_9',
+        category: 'geografia',
+        title: '9. Localização, Limites Internacionais e Fusos Horários do Acre',
+        incidence: 'Altíssima Incidência',
+        summary: 'Localizado no extremo oeste do Brasil (Região Norte), faz fronteira com o Peru (a oeste) e a Bolívia (ao sul/sudeste), e divisa com Amazonas e Rondônia. Possui a Serra do Divisor (ponto mais ocidental do Brasil) e adota o fuso horário GMT-5 (2 horas a menos em relação a Brasília).',
+        keywords: ['Fronteira Peru e Bolívia', 'Serra do Divisor', 'Fuso Horário GMT-5', 'Extremo Oeste']
+      },
+      {
+        id: 'ac_10',
+        category: 'geografia',
+        title: '10. Regionalização Interna do Acre: Vale do Juruá e Vale do Acre',
+        incidence: 'Alta Incidência',
+        summary: 'O Estado possui 22 municípios divididos em duas grandes mesorregiões/regionais: Vale do Acre (onde fica a capital Rio Branco, concentrando a maior parte da população e do PIB) e Vale do Juruá (polarizado por Cruzeiro do Sul, segunda maior cidade do estado).',
+        keywords: ['22 Municípios', 'Vale do Acre (Rio Branco)', 'Vale do Juruá (Cruzeiro do Sul)', 'Regionalização']
+      },
+      {
+        id: 'ac_11',
+        category: 'geografia',
+        title: '11. Clima Equatorial Úmido e o Fenômeno da "Friagem"',
+        incidence: 'Altíssima Incidência',
+        summary: 'O Acre apresenta clima Equatorial Úmido (quente e chuvoso, governado pela Massa Equatorial Continental - mEc). No inverno austral (maio a agosto), a penetração da Massa Polar Atlântica (mPa) pela planície platina/amazônica provoca quedas bruscas de temperatura conhecidas como "friagem".',
+        keywords: ['Massa Equatorial Continental', 'Massa Polar Atlântica', 'Fenômeno da Friagem', 'Rios Voadores']
+      },
+      {
+        id: 'ac_12',
+        category: 'geografia',
+        title: '12. Hidrografia do Acre: Bacias dos Rios Juruá e Purus',
+        incidence: 'Altíssima Incidência',
+        summary: 'Todos os rios do Acre pertencem à Bacia Amazônica, dividindo-se nas sub-bacias do Rio Juruá (rios Juruá, Tarauacá, Envira, Moa) e do Rio Purus (rios Purus, Acre, Iaco, Chandless). São rios de planície, meândricos, fundamentais para o transporte de comunidades isoladas e sujeitos a cheias severas.',
+        keywords: ['Sub-bacias Juruá e Purus', 'Rio Acre', 'Rios Meândricos de Planície', 'Enchentes Urbanas']
+      },
+      {
+        id: 'ac_13',
+        category: 'geografia',
+        title: '13. Relevo, Solos e o Fenômeno das "Terras Caídas"',
+        incidence: 'Alta Incidência',
+        summary: 'Predomina a Depressão Rio Acre-Javari (altitudes médias entre 150m e 300m) e o Planalto Rebaixado da Amazônia Ocidental, além da Serra do Divisor (até ~600m). Nos rios barrentos, a erosão fluvial nas margens côncavas provoca o desbarrancamento conhecido como "terras caídas".',
+        keywords: ['Depressão Rio Acre-Javari', 'Serra do Divisor', 'Terras Caídas', 'Solos Argilosos/Aluviais']
+      },
+      {
+        id: 'ac_14',
+        category: 'geografia',
+        title: '14. Vegetação Amazônica e as Florestas com Bambu (Taboca)',
+        incidence: 'Média-Alta Incidência',
+        summary: 'O Acre é coberto pela Floresta Amazônica, destacando-se a Floresta Ombrófila Aberta (com grande ocorrência de palmeiras e bambus nativos chamados de "taboca") e a Floresta Ombrófila Densa, além das matas de várzea e igapó.',
+        keywords: ['Floresta Ombrófila Aberta', 'Taboca (Bambu)', 'Várzea, Igapó e Terra Firme', 'Biodiversidade']
+      },
+      {
+        id: 'ac_15',
+        category: 'geografia',
+        title: '15. Logística, Rodovias (BR-364 e BR-317) e Integração Bioceânica',
+        incidence: 'Alta Incidência',
+        summary: 'A BR-364 conecta Rio Branco a Cruzeiro do Sul e ao restante do Brasil (via Rondônia), sofrendo interrupções sazonais no inverno amazônico. A BR-317 (Estrada do Pacífico) liga o Acre aos portos do Pacífico no Peru (Ilo e Matarani), estratégica para exportação.',
+        keywords: ['BR-364', 'BR-317 (Estrada do Pacífico)', 'Assis Brasil', 'Integração Sul-Americana']
+      },
+      {
+        id: 'ac_16',
+        category: 'geografia',
+        title: '16. Economia Contemporânea, Manejo Florestal e Unidades de Conservação',
+        incidence: 'Alta Incidência',
+        summary: 'A economia acreana é fortemente baseada no setor terciário (serviços e administração pública), na agropecuária (bovinocultura de corte) e na bioeconomia/extrativismo sustentável (castanha-do-brasil, açaí, borracha, manejo madeireiro certificado). Mais de 45% do território é protegido por UCs e Terras Indígenas.',
+        keywords: ['Setor Terciário', 'Manejo Florestal Sustentável', 'Castanha e Açaí', 'Unidades de Conservação']
+      }
+    ];
+
+    // =========================================================================
+    // 4. GERADOR DAS TAREFAS DIÁRIAS DAS 48 SEMANAS
+    // =========================================================================
+    const DAYS_TEMPLATE = [
+      { dayIndex: 0, name: 'Segunda-feira', subtitle: 'Exatas + Humanas + Foco Regional Acre/Amazônia', icon: 'fa-landmark', accent: 'amazon' },
+      { dayIndex: 1, name: 'Terça-feira', subtitle: 'Física + Geografia Geral e do Brasil', icon: 'fa-atom', accent: 'indigo' },
+      { dayIndex: 2, name: 'Quarta-feira', subtitle: 'Química + Linguagens, Literatura e Gramática', icon: 'fa-flask', accent: 'emerald' },
+      { dayIndex: 3, name: 'Quinta-feira', subtitle: 'Biologia + Filosofia e Sociologia', icon: 'fa-dna', accent: 'green' },
+      { dayIndex: 4, name: 'Sexta-feira', subtitle: 'Aprofundamento Exatas + Atualidades + Redação Nota 960+', icon: 'fa-pen-nib', accent: 'rose' },
+      { dayIndex: 5, name: 'Sábado', subtitle: 'Simulado Completo + Correção de Erros + Revisão Espaçada', icon: 'fa-stopwatch', accent: 'amber' },
+      { dayIndex: 6, name: 'Domingo', subtitle: 'Descanso Obrigatório & Recuperação Mental', icon: 'fa-couch', accent: 'slate', isRest: true }
+    ];
+
+    function getWeekBlocks(monthIdx, weekNum) {
+      const globalWeekIdx = monthIdx * 4 + (weekNum - 1);
+      const w = SYLLABUS_48_WEEKS[globalWeekIdx];
+      // Escala progressiva da meta de questões ao longo do ano
+      const isRetaFinal = monthIdx >= 9; // Out, Nov, Dez
+      const isMeioAno = monthIdx >= 5 && monthIdx <= 8;
+      const qMain = isRetaFinal ? 35 : (isMeioAno ? 25 : 20);
+      const qSec = isRetaFinal ? 25 : (isMeioAno ? 20 : 15);
+      const qAcre = isRetaFinal ? 20 : 12;
+
+      return {
+        0: [ // Segunda
+          { id: `w${globalWeekIdx}_d0_t0`, channelKey: 'matematica', topic: w.mat, targetQ: qMain, duration: '1h40' },
+          { id: `w${globalWeekIdx}_d0_t1`, channelKey: 'historia', topic: w.hist, targetQ: qSec, duration: '1h10' },
+          { id: `w${globalWeekIdx}_d0_t2`, channelKey: 'regional', topic: w.acre, targetQ: qAcre, duration: '50min', isRegional: true }
+        ],
+        1: [ // Terça
+          { id: `w${globalWeekIdx}_d1_t0`, channelKey: 'fisica', topic: w.fis, targetQ: qMain, duration: '1h50' },
+          { id: `w${globalWeekIdx}_d1_t1`, channelKey: 'geografia', topic: w.geo, targetQ: qSec, duration: '1h30' }
+        ],
+        2: [ // Quarta
+          { id: `w${globalWeekIdx}_d2_t0`, channelKey: 'quimica', topic: w.quim, targetQ: qMain, duration: '1h50' },
+          { id: `w${globalWeekIdx}_d2_t1`, channelKey: 'linguagens', topic: w.ling, targetQ: qSec, duration: '1h30' }
+        ],
+        3: [ // Quinta
+          { id: `w${globalWeekIdx}_d3_t0`, channelKey: 'biologia', topic: w.bio, targetQ: qMain, duration: '1h50' },
+          { id: `w${globalWeekIdx}_d3_t1`, channelKey: 'humanas_parabolica', topic: w.filo, targetQ: qSec, duration: '1h30' }
+        ],
+        4: [ // Sexta
+          { id: `w${globalWeekIdx}_d4_t0`, channelKey: 'matematica', topic: w.sex_exatas, targetQ: qMain, duration: '1h30', customTag: 'Exatas / Listas (Universo Narrado / Boaro / Assaad)' },
+          { id: `w${globalWeekIdx}_d4_t1`, channelKey: 'humanas_parabolica', topic: w.atual, targetQ: 10, duration: '45min', customTag: 'Atualidades (Parabólica)' },
+          { id: `w${globalWeekIdx}_d4_t2`, channelKey: 'redacao', topic: w.red, targetQ: 1, duration: '1h20', customTag: 'Redação (Luma e Ponto) • Meta: 1 Redação' }
+        ],
+        5: [ // Sábado
+          {
+            id: `w${globalWeekIdx}_d5_t0`,
+            channelKey: 'regional',
+            topic: isRetaFinal
+              ? `Simulado Completo UFAC / ENEM #${globalWeekIdx + 1} (90 a 180 questões cronometradas)`
+              : `Simulado Semanal Cumulativo #${globalWeekIdx + 1} (Provas Antigas UFAC / ENEM)`,
+            targetQ: isRetaFinal ? 90 : 45,
+            duration: '3h30',
+            customTag: 'Simulado Cronometrado',
+            youtubeSearch: 'Resolução prova vestibular UFAC Medicina'
+          },
+          {
+            id: `w${globalWeekIdx}_d5_t1`,
+            channelKey: 'redacao',
+            topic: 'Correção Detalhada dos Erros do Simulado + Alimentação do Caderno de Erros + Revisão Espaçada (Anki)',
+            targetQ: 15,
+            duration: '1h30',
+            customTag: 'Correção & Revisão Ativa',
+            youtubeSearch: 'Como corrigir simulado vestibular Medicina'
+          }
+        ]
+      };
+    }
+
+    // =========================================================================
+    // 5. GERENCIAMENTO DE ESTADO E LOCALSTORAGE
+    // =========================================================================
+    const STORAGE_KEY = 'medufac360_state_v1';
+
+    let appState = {
+      selectedMonth: 0, // 0 = Janeiro ... 11 = Dezembro
+      selectedWeek: 1,  // 1 a 4
+      theme: 'light',
+      tasks: {},        // { [taskId]: { done: boolean, doneQ: number, correctQ: number, completedDate: 'YYYY-MM-DD' } }
+      acreMastered: {}, // { [acreTopicId]: boolean }
+      simulados: [],    // [{ id, month, name, ling, hum, nat, mat, red, date }]
+      errors: [],       // [{ id, subject, topic, reason, lesson, date, reviewed }]
+      activeDates: []   // ['YYYY-MM-DD'] para cálculo de streak
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          appState = { ...appState, ...parsed };
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          appState.theme = 'dark';
+        }
+      } catch (e) {
+        console.error('Erro ao carregar dados do LocalStorage:', e);
+      }
+      applyTheme();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        console.error('Erro ao salvar dados no LocalStorage:', e);
+      }
+      updateDashboard();
+    }
+
+    function recordTodayActivity() {
+      const today = new Date().toISOString().split('T')[0];
+      if (!appState.activeDates.includes(today)) {
+        appState.activeDates.push(today);
+      }
+    }
+
+    function calculateStreak() {
+      if (!appState.activeDates || appState.activeDates.length === 0) return 0;
+      const sorted = [...new Set(appState.activeDates)].sort().reverse();
+      const today = new Date().toISOString().split('T')[0];
+      const yesterdayDate = new Date();
+      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+      const yesterday = yesterdayDate.toISOString().split('T')[0];
+
+      if (sorted[0] !== today && sorted[0] !== yesterday) return 0;
+
+      let streak = 1;
+      for (let i = 0; i < sorted.length - 1; i++) {
+        const d1 = new Date(sorted[i] + 'T00:00:00');
+        const d2 = new Date(sorted[i + 1] + 'T00:00:00');
+        const diffDays = Math.round((d1 - d2) / (1000 * 60 * 60 * 24));
+        if (diffDays === 1) {
+          streak++;
+        } else {
+          break;
+        }
+      }
+      return streak;
+    }
+
+    // =========================================================================
+    // 6. TEMA CLARO / ESCURO, TOASTS E MODAL DE CONFIRMAÇÃO
+    // =========================================================================
+    function applyTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      if (appState.theme === 'dark') {
+        html.classList.add('dark');
+        if (icon) icon.className = 'fa-solid fa-sun text-amber-400';
+      } else {
+        html.classList.remove('dark');
+        if (icon) icon.className = 'fa-solid fa-moon text-slate-700';
+      }
+    }
+
+    function toggleTheme() {
+      appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+      applyTheme();
+      saveState();
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgClass = type === 'success'
+        ? 'bg-amazon-700 text-white border-amazon-500'
+        : type === 'warning'
+        ? 'bg-amber-600 text-white border-amber-400'
+        : 'bg-rose-600 text-white border-rose-400';
+      const icon = type === 'success' ? 'fa-circle-check' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-circle-xmark';
+
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl border text-xs sm:text-sm font-medium transform transition-all duration-300 translate-y-2 opacity-0 ${bgClass}`;
+      toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    let confirmCallback = null;
+    function openConfirm(title, message, onConfirm) {
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-message').textContent = message;
+      confirmCallback = onConfirm;
+      const modal = document.getElementById('confirm-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    document.getElementById('confirm-cancel').addEventListener('click', () => {
+      const modal = document.getElementById('confirm-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      confirmCallback = null;
+    });
+
+    document.getElementById('confirm-ok').addEventListener('click', () => {
+      const modal = document.getElementById('confirm-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      if (confirmCallback) confirmCallback();
+      confirmCallback = null;
+    });
+
+    // =========================================================================
+    // 7. NAVEGAÇÃO ENTRE ABAS E SELETORES DE MÊS/SEMANA
+    // =========================================================================
+    function switchTab(tabName) {
+      const views = ['cronograma', 'acre', 'simulados', 'erros', 'canais'];
+      views.forEach(v => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+        const btn = document.getElementById(`tab-btn-${v}`);
+        btn.className = 'tab-btn flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+      });
+
+      document.getElementById(`view-${tabName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+      activeBtn.className = 'tab-btn flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition bg-amazon-600 text-white shadow-sm';
+
+      if (tabName === 'acre') renderAcreDossier();
+      if (tabName === 'simulados') renderSimulados();
+      if (tabName === 'erros') renderErrors();
+      if (tabName === 'canais') renderChannels();
+    }
+
+    function renderMonthSelector() {
+      const container = document.getElementById('month-selector');
+      container.innerHTML = MONTHS.map(m => {
+        const isSelected = m.id === appState.selectedMonth;
+        // Calcular progresso do mês
+        let totalM = 0, doneM = 0;
+        for (let w = 1; w <= 4; w++) {
+          const blocks = getWeekBlocks(m.id, w);
+          Object.values(blocks).forEach(dayList => {
+            dayList.forEach(t => {
+              totalM++;
+              if (appState.tasks[t.id]?.done) doneM++;
+            });
+          });
+        }
+        const pct = totalM > 0 ? Math.round((doneM / totalM) * 100) : 0;
+
+        return `
+          <button onclick="selectMonth(${m.id})"
+            class="flex flex-col items-center justify-center p-2 rounded-xl border text-xs transition ${
+              isSelected
+                ? 'bg-amazon-600 text-white border-amazon-600 shadow-sm font-bold'
+                : 'bg-slate-50 dark:bg-slate-800/70 text-slate-700 dark:text-slate-300 border-slate-200/80 dark:border-slate-700/80 hover:border-amazon-400'
+            }">
+            <span>${m.short}</span>
+            <span class="text-[10px] mt-0.5 ${isSelected ? 'text-amazon-100' : 'text-slate-400'}">${pct}%</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectMonth(monthId) {
+      appState.selectedMonth = monthId;
+      saveState();
+      renderMonthSelector();
+      renderSchedule();
+    }
+
+    function selectWeek(weekNum) {
+      appState.selectedWeek = weekNum;
+      for (let i = 1; i <= 4; i++) {
+        const btn = document.getElementById(`week-btn-${i}`);
+        if (i === weekNum) {
+          btn.className = 'week-btn px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white dark:bg-slate-700 text-amazon-700 dark:text-amazon-300 shadow-sm';
+        } else {
+          btn.className = 'week-btn px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-700/60';
+        }
+      }
+      saveState();
+      renderSchedule();
+    }
+
+    // =========================================================================
+    // 8. RENDERIZAÇÃO DO CRONOGRAMA SEMANAL E REGISTRO DE QUESTÕES
+    // =========================================================================
+    function buildYouTubeSearchUrl(channelKey, topic, customQuery) {
+      if (customQuery) {
+        return `https://www.youtube.com/results?search_query=${encodeURIComponent(customQuery)}`;
+      }
+      const ch = CHANNELS[channelKey];
+      const cleanTopic = topic.split(':')[0];
+      const q = `${ch.queryPrefix} ${cleanTopic}`;
+      return `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
+    }
+
+    function renderSchedule() {
+      const monthObj = MONTHS[appState.selectedMonth];
+      document.getElementById('phase-badge').textContent = `${monthObj.name} • Semana ${appState.selectedWeek} — ${monthObj.phase}`;
+      document.getElementById('phase-desc').textContent = monthObj.desc;
+
+      // Atualizar destaque dos botões de semana
+      for (let i = 1; i <= 4; i++) {
+        const btn = document.getElementById(`week-btn-${i}`);
+        if (i === appState.selectedWeek) {
+          btn.className = 'week-btn px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white dark:bg-slate-700 text-amazon-700 dark:text-amazon-300 shadow-sm';
+        } else {
+          btn.className = 'week-btn px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-700/60';
+        }
+      }
+
+      const dayFilter = document.getElementById('filter-day').value;
+      const onlyPending = document.getElementById('filter-pending').checked;
+      const weekBlocks = getWeekBlocks(appState.selectedMonth, appState.selectedWeek);
+
+      // Calcular meta total da semana
+      let weekTargetQuestions = 0;
+      Object.values(weekBlocks).forEach(list => list.forEach(t => weekTargetQuestions += t.targetQ));
+      document.getElementById('week-meta-summary').textContent = `Meta da semana: ${weekTargetQuestions} questões`;
+
+      const container = document.getElementById('schedule-container');
+      let html = '';
+
+      DAYS_TEMPLATE.forEach(day => {
+        if (dayFilter !== 'all' && String(day.dayIndex) !== dayFilter) return;
+
+        // Card especial de Domingo (Descanso Obrigatório)
+        if (day.isRest) {
+          html += `
+            <div class="bg-gradient-to-r from-slate-100 to-amazon-50/60 dark:from-slate-900 dark:to-amazon-950/30 rounded-2xl p-6 border border-dashed border-amazon-300 dark:border-amazon-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-amazon-100 dark:bg-amazon-900/60 text-amazon-700 dark:text-amazon-300 flex items-center justify-center text-xl shrink-0">
+                  <i class="fa-solid fa-spa"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h3 class="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-white">Domingo — Descanso Obrigatório</h3>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amazon-200/80 text-amazon-900 dark:bg-amazon-900 dark:text-amazon-200">ZERO ESTUDOS</span>
+                  </div>
+                  <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1">
+                    Aprovação em Medicina exige consolidação sináptica durante o sono e descanso. Caminhe ao ar livre, passe tempo com a família, durma bem e recarregue as energias para segunda-feira!
+                  </p>
+                </div>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        let tasks = weekBlocks[day.dayIndex] || [];
+        if (onlyPending) {
+          tasks = tasks.filter(t => !appState.tasks[t.id]?.done);
+        }
+
+        const totalDayTasks = (weekBlocks[day.dayIndex] || []).length;
+        const doneDayTasks = (weekBlocks[day.dayIndex] || []).filter(t => appState.tasks[t.id]?.done).length;
+        const dayComplete = totalDayTasks > 0 && doneDayTasks === totalDayTasks;
+
+        html += `
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border ${dayComplete ? 'border-amazon-400 dark:border-amazon-700' : 'border-slate-200/80 dark:border-slate-800'} shadow-sm overflow-hidden transition">
+            <!-- Cabeçalho do Dia -->
+            <div class="px-5 py-4 bg-slate-50/90 dark:bg-slate-800/50 border-b border-slate-200/70 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl ${dayComplete ? 'bg-amazon-600 text-white' : 'bg-white dark:bg-slate-800 text-amazon-600 dark:text-amazon-400 border border-slate-200 dark:border-slate-700'} flex items-center justify-center shadow-xs">
+                  <i class="fa-solid ${dayComplete ? 'fa-check' : day.icon}"></i>
+                </div>
+                <div>
+                  <h3 class="font-display font-bold text-base text-slate-900 dark:text-white">${day.name}</h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">${day.subtitle}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold px-3 py-1 rounded-full ${dayComplete ? 'bg-amazon-100 text-amazon-800 dark:bg-amazon-900/70 dark:text-amazon-200' : 'bg-slate-200/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}">
+                  ${doneDayTasks}/${totalDayTasks} blocos concluídos
+                </span>
+              </div>
+            </div>
+
+            <!-- Lista de Blocos de Estudo do Dia -->
+            <div class="divide-y divide-slate-100 dark:divide-slate-800/90">
+              ${tasks.length === 0 ? `<div class="p-6 text-center text-xs text-slate-400">Todos os blocos deste dia já foram concluídos! Parabéns!</div>` : ''}
+              ${tasks.map(task => {
+                const ch = CHANNELS[task.channelKey];
+                const saved = appState.tasks[task.id] || { done: false, doneQ: '', correctQ: '' };
+                const doneQNum = Number(saved.doneQ) || 0;
+                const correctQNum = Number(saved.correctQ) || 0;
+                const hasMetrics = doneQNum > 0;
+                const accPct = hasMetrics ? Math.round((correctQNum / doneQNum) * 100) : null;
+                const lowAcc = hasMetrics && accPct < 80;
+                const ytUrl = buildYouTubeSearchUrl(task.channelKey, task.topic, task.youtubeSearch);
+
+                return `
+                  <div class="p-4 sm:p-5 transition ${saved.done ? 'bg-amazon-50/35 dark:bg-amazon-950/15' : 'hover:bg-slate-50/60 dark:hover:bg-slate-800/30'}">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                      <!-- Esquerda: Checkbox + Info da Matéria -->
+                      <div class="flex items-start gap-3.5 flex-1">
+                        <input type="checkbox" id="chk_${task.id}" ${saved.done ? 'checked' : ''}
+                          onchange="toggleTaskDone('${task.id}', this.checked)"
+                          class="mt-1 w-5 h-5 rounded-md border-slate-300 text-amazon-600 focus:ring-amazon-500 cursor-pointer shrink-0">
+
+                        <div class="space-y-1.5 flex-1">
+                          <div class="flex flex-wrap items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold ${
+                              task.isRegional
+                                ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/60 dark:text-amber-200 border border-amber-300/70 dark:border-amber-700'
+                                : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                            }">
+                              ${task.customTag || `${ch.subject} • ${ch.teacher}`}
+                            </span>
+                            <span class="text-[11px] font-medium text-slate-400 flex items-center gap-1">
+                              <i class="fa-regular fa-clock"></i> ${task.duration}
+                            </span>
+                            <span class="text-[11px] font-semibold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-2 py-0.5 rounded-md">
+                              Meta: ${task.targetQ} ${task.targetQ === 1 ? 'redação' : 'questões'}
+                            </span>
+                          </div>
+
+                          <p class="text-sm sm:text-[15px] font-semibold leading-snug ${saved.done ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'}">
+                            ${task.topic}
+                          </p>
+
+                          <div class="pt-1 flex flex-wrap items-center gap-2">
+                            <a href="${ytUrl}" target="_blank" rel="noopener noreferrer"
+                              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:hover:bg-rose-900/60 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/60 transition">
+                              <i class="fa-brands fa-youtube text-rose-600 dark:text-rose-400"></i>
+                              <span>Assistir Aula (${ch.teacher})</span>
+                              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-75"></i>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Direita: Registro de Questões Feitas / Acertadas -->
+                      <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 bg-slate-50 dark:bg-slate-800/80 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/70 self-start lg:self-center">
+                        <div>
+                          <label class="block text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 mb-0.5">Feitas</label>
+                          <input type="number" min="0" max="300" placeholder="0"
+                            value="${saved.doneQ !== '' && saved.doneQ !== undefined ? saved.doneQ : ''}"
+                            onchange="updateTaskMetrics('${task.id}', 'doneQ', this.value)"
+                            class="w-16 px-2 py-1 rounded-lg text-xs font-bold text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amazon-500 outline-none">
+                        </div>
+                        <div>
+                          <label class="block text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 mb-0.5">Acertos</label>
+                          <input type="number" min="0" max="300" placeholder="0"
+                            value="${saved.correctQ !== '' && saved.correctQ !== undefined ? saved.correctQ : ''}"
+                            onchange="updateTaskMetrics('${task.id}', 'correctQ', this.value)"
+                            class="w-16 px-2 py-1 rounded-lg text-xs font-bold text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amazon-500 outline-none">
+                        </div>
+                        <div class="min-w-[84px] text-center pl-1 border-l border-slate-200 dark:border-slate-700">
+                          <span class="block text-[10px] font-semibold uppercase text-slate-400">Aproveit.</span>
+                          ${
+                            !hasMetrics
+                              ? `<span class="text-xs font-bold text-slate-400">--%</span>`
+                              : lowAcc
+                              ? `<span title="Abaixo de 80% (Padrão Medicina). Revise a teoria e anote os erros!" class="inline-flex items-center gap-1 text-xs font-extrabold text-rose-600 dark:text-rose-400"><i class="fa-solid fa-triangle-exclamation"></i> ${accPct}%</span>`
+                              : `<span title="Excelente! Padrão aprovação Medicina (≥80%)" class="inline-flex items-center gap-1 text-xs font-extrabold text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-circle-check"></i> ${accPct}%</span>`
+                          }
+                        </div>
+                      </div>
+                    </div>
+
+                    ${
+                      lowAcc
+                        ? `<div class="mt-3 px-3 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-xs text-rose-700 dark:text-rose-300 flex items-center justify-between gap-2">
+                            <span><i class="fa-solid fa-circle-exclamation mr-1.5"></i><strong>Alerta Padrão Medicina (&lt;80%):</strong> Aproveitamento de ${accPct}%. Refaça as questões erradas e registre no Caderno de Erros!</span>
+                            <button onclick="quickSendToErrorBook('${ch.subject.replace(/'/g, "\\'")}', '${task.topic.split(':')[0].replace(/'/g, "\\'")}')" class="shrink-0 px-2.5 py-1 rounded-lg bg-rose-600 text-white font-semibold hover:bg-rose-700 transition text-[11px]">Anotar Erro</button>
+                          </div>`
+                        : ''
+                    }
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function toggleTaskDone(taskId, isChecked) {
+      if (!appState.tasks[taskId]) {
+        appState.tasks[taskId] = { done: false, doneQ: '', correctQ: '' };
+      }
+      appState.tasks[taskId].done = isChecked;
+      if (isChecked) {
+        recordTodayActivity();
+        showToast('Bloco concluído! Mais um passo rumo à Medicina na UFAC.');
+      }
+      saveState();
+      renderMonthSelector();
+      renderSchedule();
+    }
+
+    function updateTaskMetrics(taskId, field, value) {
+      if (!appState.tasks[taskId]) {
+        appState.tasks[taskId] = { done: false, doneQ: '', correctQ: '' };
+      }
+      const num = value === '' ? '' : Math.max(0, parseInt(value, 10) || 0);
+      appState.tasks[taskId][field] = num;
+
+      // Garantir que acertos não ultrapassem feitas
+      const d = Number(appState.tasks[taskId].doneQ) || 0;
+      const c = Number(appState.tasks[taskId].correctQ) || 0;
+      if (c > d && d > 0) {
+        appState.tasks[taskId].correctQ = d;
+        showToast('Acertos ajustados para o total de questões feitas.', 'warning');
+      }
+
+      if (d > 0) {
+        recordTodayActivity();
+      }
+      saveState();
+      renderSchedule();
+    }
+
+    function quickSendToErrorBook(subject, topic) {
+      switchTab('erros');
+      const subjSelect = document.getElementById('err-subject');
+      for (let opt of subjSelect.options) {
+        if (subject.toLowerCase().includes(opt.value.toLowerCase().split(' ')[0])) {
+          subjSelect.value = opt.value;
+          break;
+        }
+      }
+      document.getElementById('err-topic').value = topic;
+      document.getElementById('err-lesson').focus();
+    }
+
+    // =========================================================================
+    // 9. RENDERIZAÇÃO DO DOSSIÊ ACRE & AMAZÔNIA
+    // =========================================================================
+    let currentAcreFilter = 'all';
+
+    function filterAcre(cat) {
+      currentAcreFilter = cat;
+      ['all', 'historia', 'geografia'].forEach(c => {
+        const btn = document.getElementById(`acre-filter-${c}`);
+        btn.className = c === cat
+          ? 'acre-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amazon-600 text-white'
+          : 'acre-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300';
+      });
+      renderAcreDossier();
+    }
+
+    function toggleAcreTopic(id) {
+      appState.acreMastered[id] = !appState.acreMastered[id];
+      if (appState.acreMastered[id]) {
+        recordTodayActivity();
+        showToast('Tópico regional do Acre dominado!');
+      }
+      saveState();
+      renderAcreDossier();
+    }
+
+    function renderAcreDossier() {
+      const masteredCount = ACRE_TOPICS.filter(t => appState.acreMastered[t.id]).length;
+      document.getElementById('acre-mastered-count').textContent = `${masteredCount} de ${ACRE_TOPICS.length}`;
+
+      const filtered = currentAcreFilter === 'all'
+        ? ACRE_TOPICS
+        : ACRE_TOPICS.filter(t => t.category === currentAcreFilter);
+
+      const grid = document.getElementById('acre-dossier-grid');
+      grid.innerHTML = filtered.map(item => {
+        const isDone = !!appState.acreMastered[item.id];
+        const ytQuery = `${item.title.replace(/^\d+\.\s*/, '')} Acre vestibular UFAC`;
+        const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(ytQuery)}`;
+
+        return `
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border ${isDone ? 'border-amazon-500 dark:border-amazon-600' : 'border-slate-200/80 dark:border-slate-800'} shadow-sm flex flex-col justify-between gap-4 transition">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-2.5">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold uppercase ${
+                    item.category === 'historia'
+                      ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300'
+                      : 'bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300'
+                  }">
+                    ${item.category === 'historia' ? 'História do Acre' : 'Geografia do Acre'}
+                  </span>
+                  <span class="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
+                    ${item.incidence}
+                  </span>
+                </div>
+
+                <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-bold ${isDone ? 'text-amazon-600 dark:text-amazon-400' : 'text-slate-400'}">
+                  <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleAcreTopic('${item.id}')" class="w-4 h-4 rounded text-amazon-600 focus:ring-amazon-500">
+                  <span>${isDone ? 'Dominado' : 'Estudar'}</span>
+                </label>
+              </div>
+
+              <h3 class="font-display font-bold text-base text-slate-900 dark:text-white mb-2">${item.title}</h3>
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-3">${item.summary}</p>
+            </div>
+
+            <div class="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div class="flex flex-wrap gap-1.5">
+                ${item.keywords.map(k => `<span class="px-2 py-0.5 rounded-md text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium">#${k}</span>`).join('')}
+              </div>
+              <a href="${ytUrl}" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline">
+                <i class="fa-brands fa-youtube"></i>
+                <span>Buscar aulas sobre este tema no YouTube</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // 10. SIMULADOS & NOTAS UFAC
+    // =========================================================================
+    function addSimulado(e) {
+      e.preventDefault();
+      const name = document.getElementById('sim-name').value.trim();
+      const month = document.getElementById('sim-month').value;
+      const ling = parseInt(document.getElementById('sim-ling').value, 10) || 0;
+      const hum = parseInt(document.getElementById('sim-hum').value, 10) || 0;
+      const nat = parseInt(document.getElementById('sim-nat').value, 10) || 0;
+      const mat = parseInt(document.getElementById('sim-mat').value, 10) || 0;
+      const red = parseInt(document.getElementById('sim-red').value, 10) || 0;
+
+      appState.simulados.unshift({
+        id: Date.now(),
+        month,
+        name,
+        ling,
+        hum,
+        nat,
+        mat,
+        red
+      });
+
+      recordTodayActivity();
+      saveState();
+      renderSimulados();
+      document.getElementById('simulado-form').reset();
+      showToast('Simulado registrado com sucesso!');
+    }
+
+    function deleteSimulado(id) {
+      appState.simulados = appState.simulados.filter(s => s.id !== id);
+      saveState();
+      renderSimulados();
+      showToast('Simulado removido.', 'warning');
+    }
+
+    function renderSimulados() {
+      const tbody = document.getElementById('simulados-table-body');
+      if (appState.simulados.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="p-8 text-center text-slate-400">
+              Nenhum simulado registrado ainda. Faça seu simulado todo sábado e acompanhe sua evolução rumo à Medicina UFAC!
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = appState.simulados.map(s => {
+        const total = s.ling + s.hum + s.nat + s.mat;
+        const pct = ((total / 180) * 100).toFixed(1);
+        const isMedLevel = pct >= 80 && s.red >= 900;
+
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+            <td class="p-3 font-semibold text-slate-700 dark:text-slate-300">${s.month}</td>
+            <td class="p-3 font-bold text-slate-900 dark:text-white">${s.name}</td>
+            <td class="p-3 text-center">${s.ling}/45</td>
+            <td class="p-3 text-center">${s.hum}/45</td>
+            <td class="p-3 text-center">${s.nat}/45</td>
+            <td class="p-3 text-center">${s.mat}/45</td>
+            <td class="p-3 text-center font-extrabold text-slate-900 dark:text-white">${total}/180</td>
+            <td class="p-3 text-center">
+              <span class="px-2 py-0.5 rounded-full font-bold ${isMedLevel ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300'}">
+                ${pct}%
+              </span>
+            </td>
+            <td class="p-3 text-center font-bold ${s.red >= 920 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300'}">${s.red}</td>
+            <td class="p-3 text-right">
+              <button onclick="deleteSimulado(${s.id})" title="Excluir" class="text-rose-500 hover:text-rose-700 p-1">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // 11. CADERNO DE ERROS
+    // =========================================================================
+    function addErrorNote(e) {
+      e.preventDefault();
+      const subject = document.getElementById('err-subject').value;
+      const topic = document.getElementById('err-topic').value.trim();
+      const reason = document.getElementById('err-reason').value;
+      const lesson = document.getElementById('err-lesson').value.trim();
+
+      appState.errors.unshift({
+        id: Date.now(),
+        subject,
+        topic,
+        reason,
+        lesson,
+        reviewed: false,
+        date: new Date().toLocaleDateString('pt-BR')
+      });
+
+      recordTodayActivity();
+      saveState();
+      renderErrors();
+      document.getElementById('error-form').reset();
+      showToast('Erro catalogado! Cada erro corrigido hoje é um acerto garantido no dia da prova.');
+    }
+
+    function toggleErrorReviewed(id) {
+      const item = appState.errors.find(x => x.id === id);
+      if (item) {
+        item.reviewed = !item.reviewed;
+        saveState();
+        renderErrors();
+      }
+    }
+
+    function deleteErrorNote(id) {
+      appState.errors = appState.errors.filter(x => x.id !== id);
+      saveState();
+      renderErrors();
+    }
+
+    function renderErrors() {
+      const container = document.getElementById('errors-list');
+      if (appState.errors.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full p-8 text-center text-xs sm:text-sm text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
+            Seu Caderno de Erros está vazio. Sempre que errar uma questão nas listas ou simulados, registre aqui o aprendizado!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = appState.errors.map(err => `
+        <div class="p-4 rounded-2xl border ${err.reviewed ? 'bg-slate-50/70 dark:bg-slate-800/30 border-slate-200 dark:border-slate-800 opacity-75' : 'bg-white dark:bg-slate-900 border-rose-200/80 dark:border-rose-900/50'} shadow-xs flex flex-col justify-between gap-3">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">${err.subject}</span>
+                <span class="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300">${err.reason}</span>
+              </div>
+              <span class="text-[11px] text-slate-400">${err.date}</span>
+            </div>
+            <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-1">${err.topic}</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800/70 p-2.5 rounded-xl">${err.lesson}</p>
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+            <label class="inline-flex items-center gap-1.5 text-xs font-semibold cursor-pointer ${err.reviewed ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'}">
+              <input type="checkbox" ${err.reviewed ? 'checked' : ''} onchange="toggleErrorReviewed(${err.id})" class="rounded text-emerald-600">
+              <span>${err.reviewed ? 'Revisado e Superado' : 'Marcar como revisado'}</span>
+            </label>
+            <button onclick="deleteErrorNote(${err.id})" class="text-xs text-slate-400 hover:text-rose-500">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // =========================================================================
+    // 12. RENDERIZAÇÃO DO GUIA DE CANAIS DO YOUTUBE
+    // =========================================================================
+    function renderChannels() {
+      const grid = document.getElementById('channels-grid');
+      grid.innerHTML = Object.values(CHANNELS).map(ch => `
+        <div class="p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between gap-4">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-amazon-600 dark:text-amazon-400">${ch.subject}</span>
+              <i class="fa-brands fa-youtube text-rose-600 text-lg"></i>
+            </div>
+            <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white mb-2">${ch.teacher}</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${ch.tip}</p>
+          </div>
+          <a href="${ch.url}" target="_blank" rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-800 dark:text-slate-100 hover:text-rose-700 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700 text-xs font-bold transition">
+            <span>Abrir Canal no YouTube</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+        </div>
+      `).join('');
+    }
+
+    // =========================================================================
+    // 13. ATUALIZAÇÃO DO DASHBOARD GLOBAL
+    // =========================================================================
+    function updateDashboard() {
+      let totalBlocks = 0;
+      let doneBlocks = 0;
+      let totalQuestionsDone = 0;
+      let totalQuestionsCorrect = 0;
+      let annualTargetQuestions = 0;
+
+      // Iterar sobre todas as 48 semanas
+      for (let m = 0; m < 12; m++) {
+        for (let w = 1; w <= 4; w++) {
+          const blocks = getWeekBlocks(m, w);
+          Object.values(blocks).forEach(dayList => {
+            dayList.forEach(t => {
+              totalBlocks++;
+              annualTargetQuestions += t.targetQ;
+              const saved = appState.tasks[t.id];
+              if (saved) {
+                if (saved.done) doneBlocks++;
+                totalQuestionsDone += Number(saved.doneQ) || 0;
+                totalQuestionsCorrect += Number(saved.correctQ) || 0;
+              }
+            });
+          });
+        }
+      }
+
+      // Métricas da semana atual selecionada
+      const currentWeekBlocks = getWeekBlocks(appState.selectedMonth, appState.selectedWeek);
+      let weekTotal = 0, weekDone = 0, weekQ = 0;
+      Object.values(currentWeekBlocks).forEach(dayList => {
+        dayList.forEach(t => {
+          weekTotal++;
+          const saved = appState.tasks[t.id];
+          if (saved) {
+            if (saved.done) weekDone++;
+            weekQ += Number(saved.doneQ) || 0;
+          }
+        });
+      });
+
+      const annualPct = totalBlocks > 0 ? ((doneBlocks / totalBlocks) * 100).toFixed(1) : '0.0';
+      const weekPct = weekTotal > 0 ? Math.round((weekDone / weekTotal) * 100) : 0;
+      const qPct = annualTargetQuestions > 0 ? Math.min(100, (totalQuestionsDone / annualTargetQuestions) * 100) : 0;
+
+      document.getElementById('stat-annual-pct').textContent = `${annualPct}%`;
+      document.getElementById('stat-annual-tasks').textContent = `${doneBlocks} / ${totalBlocks} blocos`;
+      document.getElementById('bar-annual').style.width = `${annualPct}%`;
+      document.getElementById('stat-week-progress').textContent = `Semana selecionada: ${weekPct}% concluída (${weekDone}/${weekTotal})`;
+
+      document.getElementById('stat-questions-done').textContent = totalQuestionsDone.toLocaleString('pt-BR');
+      document.getElementById('stat-questions-goal').textContent = `Meta anual: ${annualTargetQuestions.toLocaleString('pt-BR')}`;
+      document.getElementById('bar-questions').style.width = `${qPct}%`;
+      document.getElementById('stat-week-questions').textContent = `Na semana selecionada: ${weekQ} questões`;
+
+      // Taxa global de acertos
+      const accEl = document.getElementById('stat-accuracy');
+      const accBadge = document.getElementById('stat-accuracy-badge');
+      const barAcc = document.getElementById('bar-accuracy');
+      if (totalQuestionsDone > 0) {
+        const acc = ((totalQuestionsCorrect / totalQuestionsDone) * 100).toFixed(1);
+        accEl.textContent = `${acc}%`;
+        barAcc.style.width = `${acc}%`;
+        if (Number(acc) >= 80) {
+          accBadge.textContent = 'Padrão Medicina (≥80%)';
+          accBadge.className = 'px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300';
+          barAcc.className = 'h-full bg-emerald-500 rounded-full transition-all duration-500';
+        } else {
+          accBadge.textContent = 'Atenção: Buscar ≥80%';
+          accBadge.className = 'px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300';
+          barAcc.className = 'h-full bg-amber-500 rounded-full transition-all duration-500';
+        }
+      } else {
+        accEl.textContent = '--%';
+        barAcc.style.width = '0%';
+      }
+      document.getElementById('stat-correct-count').textContent = `${totalQuestionsCorrect.toLocaleString('pt-BR')} acertos totais registrados`;
+
+      // Simulados & Acre
+      document.getElementById('stat-simulados-count').textContent = appState.simulados.length;
+      const masteredAcre = ACRE_TOPICS.filter(t => appState.acreMastered[t.id]).length;
+      document.getElementById('stat-acre-progress').textContent = `Acre: ${masteredAcre}/${ACRE_TOPICS.length} tópicos`;
+      document.getElementById('bar-acre').style.width = `${(masteredAcre / ACRE_TOPICS.length) * 100}%`;
+
+      if (appState.simulados.length > 0) {
+        const best = Math.max(...appState.simulados.map(s => ((s.ling + s.hum + s.nat + s.mat) / 180) * 100));
+        document.getElementById('stat-best-simulado').textContent = `Melhor aproveitamento: ${best.toFixed(1)}%`;
+      } else {
+        document.getElementById('stat-best-simulado').textContent = 'Melhor aproveitamento: --';
+      }
+
+      // Streak
+      document.getElementById('header-streak').textContent = calculateStreak();
+    }
+
+    // =========================================================================
+    // 14. BACKUP (EXPORTAR / IMPORTAR JSON) E RESET
+    // =========================================================================
+    function exportData() {
+      const dataStr = JSON.stringify(appState, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `backup_medufac360_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Backup baixado com sucesso! Guarde em local seguro.');
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && typeof imported === 'object') {
+            appState = { ...appState, ...imported };
+            saveState();
+            applyTheme();
+            renderMonthSelector();
+            renderSchedule();
+            renderAcreDossier();
+            renderSimulados();
+            renderErrors();
+            showToast('Progresso restaurado com sucesso!');
+          }
+        } catch (err) {
+          showToast('Arquivo de backup inválido.', 'error');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function confirmResetAll() {
+      openConfirm(
+        'Resetar todo o progresso?',
+        'Isso apagará todos os blocos marcados, questões registradas, simulados, anotações do caderno de erros e progresso do Dossiê Acre. Recomendamos baixar um backup antes.',
+        () => {
+          localStorage.removeItem(STORAGE_KEY);
+          appState = {
+            selectedMonth: 0,
+            selectedWeek: 1,
+            theme: appState.theme,
+            tasks: {},
+            acreMastered: {},
+            simulados: [],
+            errors: [],
+            activeDates: []
+          };
+          saveState();
+          renderMonthSelector();
+          renderSchedule();
+          renderAcreDossier();
+          renderSimulados();
+          renderErrors();
+          showToast('Todos os dados foram resetados.', 'warning');
+        }
+      );
+    }
+
+    // =========================================================================
+    // 15. INICIALIZAÇÃO
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderMonthSelector();
+      renderSchedule();
+      updateDashboard();
+    });
+  </script>
+</body>
+</html>
